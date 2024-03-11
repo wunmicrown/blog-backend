@@ -1,7 +1,7 @@
 {
   "name": "blog-backend",
   "version": "1.0.0",
-  "description": "this app is a blog site backend",
+  "description": "This project serves as the backend for a blog site.",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
