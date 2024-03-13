@@ -1,9 +1,8 @@
-const authRoutes = require("express").Router();
 
-// const {
+const authRoutes = require  ("express").Router();
+const { signup } = require("../controllers/user.controller");
 
-
-// } = require(`../controllers/user.controller`)
-
-//routes Define
+// //routes Define
 authRoutes.post('/signup', signup)
+
+module.exports = authRoutes;
