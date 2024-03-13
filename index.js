@@ -1,13 +1,21 @@
 "use strict"
 const express = require('express');
 const app = express();
+const router = express.Router();
+// const routers = require('./routes/all.route');
 require("dotenv").config(); // load environment variables from .env file
 let PORT = process.env.PORT || 4000;
 
-app.get('/', (req, res) => {
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
+
+
+router.get('/', (req, res) => {
    return res.status(200).send('App is Woking')                
 })
 
+// app.use('/', router);
+// app.use('/v1', routers);
 
 
 app.listen(PORT, () => {

@@ -1,8 +1,9 @@
 const mongoose = require('mongoose')
 require('dotenv').config()
 const bcrypt = require('bcrypt')
-const URI = process.env.MONGODB_URI
 
+const URI = process.env.MONGODB_URI
+console.log(URI);
 mongoose.connect(URI)
     .then(() => {
         console.log(`connected to database sucessfully`);
