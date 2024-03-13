@@ -1,7 +1,7 @@
 const apiRoutes = require("express").Router();
-const {
+// const {
 
-} = require('../controllers/user.controller')
+// } = require('../controllers/user.controller')
 
 apiRoutes.post('/post', post)
 
