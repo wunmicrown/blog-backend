@@ -1,7 +1,6 @@
-// const express = require("express");
+// const apiRoutes = require("express").Router();
 // const { post } = require("../controllers/user.controller");
 
-// const apiRoutes = express.Router();
 
 // apiRoutes.post('/post', post);
 
