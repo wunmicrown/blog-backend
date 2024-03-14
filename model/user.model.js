@@ -14,23 +14,25 @@ mongoose.connect(URI)
 let userSchema = new mongoose.Schema({
     firstName: String,
     lastName: String,
-    email: { type: String, require: true, default: false },
+    email: { type: String, required: true, default: false },
+    otp: { type: Number, unique: true },
     emailVerified: { type: Boolean, default: false },
     password: { type: String, require: true },
-    profilePic: { type: String },
+    profilePic: String,
 })
 
 userSchema.pre('save', async function (next) {
-    bcrypt.hash(this.password, 10, (err, hash) => {
-        console.log(hash);
+    try {
+        const hash = await bcrypt.hash(this.password, 10);
         this.password = hash;
         next();
-    })
-})
+    } catch (error) {
+        next(error);
+    }
+});
 
-let user = mongoose.model('user', userSchema)
+
+let User = mongoose.model('User', userSchema)
 
 
-module.exports = {
-    user
-};
+module.exports = User
