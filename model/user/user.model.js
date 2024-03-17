@@ -31,10 +31,7 @@ let userSchema = new mongoose.Schema(
             type: String,
             require: true
         },
-        // otp: {
-        //     type: Number,
-        //     unique: true
-        // },
+        otp: { type: Number },
         profilePic: {
             type: String,
             default:null
