@@ -1,12 +1,14 @@
 'use strict'
-const User= require('../model/user.model');
+const asyncHandler = require('express-async-handler');
+const User= require('../../model/user.model');
 const bcrypt = require('bcrypt');
 const nodemailer = require('nodemailer');
 const otpGenerator = require('otp-generator');
-const { excludeFields } = require('../utils/common.methods');
+const { excludeFields } = require('../../utils/common.methods');
 
-
-const signup = async(req,res)=>{
+//-----User Controller---
+const userController ={
+  register :asyncHandler(async (req, res) => {
     try {
         const {email}=req.body;
         console.log({emailBody:email});
@@ -32,79 +34,12 @@ const signup = async(req,res)=>{
         console.error("Error during signup:", err);
         // return res.status(401).send('Bad request');
 
-    }               
+    }              
     // return res.status(200).send('signup route is working now ');
 
+  }),
+  
 }
 
 
-
-module.exports = {
-    signup
-
-};
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+module.exports = userController;
