@@ -16,6 +16,16 @@ const registerPayloadValidator = Joi.object({
         email().
         required(),
 })
+/** The Validator for user login payload */
+const loginPayLoadValidator = Joi.object({
+    email: Joi.string()
+        .email()
+        .required(),
+    password: Joi.string()
+        .pattern(new RegExp('^[a-zA-Z0-9]{8,}$'))
+        .required(),
+
+})
 
 /**
  * 
@@ -34,16 +44,7 @@ const schemaValidatorHandler = async (validatorSchema, payload) => {
     }
 }
 
-/** The Validator for user login payload */
-const loginPayLoadValidator = Joi.object({
-    email: Joi.string()
-        .email()
-        .required(),
-    password: Joi.string()
-        .pattern(new RegExp('^[a-zA-Z0-9]{8,}$'))
-        .required(),
 
-})
 // The payload object for reset email
 // const resetEmailPayLoad = Joi.object({
 //     email: Joi.string().email().required(),
