@@ -31,7 +31,7 @@ let userSchema = new mongoose.Schema(
             type: String,
             require: true
         },
-        otp: { type: Number },
+        otp: {   type: Number },
         profilePic: {
             type: String,
             default:null
