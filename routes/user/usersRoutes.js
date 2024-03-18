@@ -6,6 +6,7 @@ const usersRouter = express.Router();
 
 usersRouter.post("/register", ValidatorMDW, userController.register);
 usersRouter.post("/login", ValidatorMDW, userController.login);
+usersRouter.post("/verify-email", userController.verifyEmail);
 
 
 module.exports = usersRouter;

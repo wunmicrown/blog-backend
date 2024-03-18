@@ -27,6 +27,7 @@ const loginPayLoadValidator = Joi.object({
 
 })
 
+
 /**
  * 
  * @param {Joi.ObjectSchema} validatorSchema 
