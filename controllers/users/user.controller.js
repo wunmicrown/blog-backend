@@ -63,22 +63,23 @@ const userController = {
       return res.status(404).json({ message: "Invalid credentials", status: false });
     }
 
+     // Check if the email is verified
+     if (!user.isEmailVerified) {
+      return res.status(403).json({ message: "Email not verified. Please verify your email to log in.", status: false });
+  }
+
     // Log the plaintext password and the hashed password retrieved from the database
-    const match = await bcrypt.compare(password, user.password);
-    console.log("Plaintext password:", password);
-    console.log("Hashed password from database:", user.password);
-    console.log("bcrypt.compare result:", match);
+    // const match = await bcrypt.compare(password, user.password);
+    // console.log("Plaintext password:", password);
+    // console.log("Hashed password from database:", user.password);
+    // console.log("bcrypt.compare result:", match);
 
     // Check if passwords match
-    if (!match) {
-      console.log("Incorrect password");
-      return res.status(401).send({ message: "Invalid credentials", status: false });
-    }
+    // if (!match) {
+    //   console.log("Incorrect password");
+    //   return res.status(401).send({ message: "Invalid credentials", status: false });
+    // }
 
-    // Check if the email is verified
-    if (!user.isEmailVerified) {
-      return res.status(403).json({ message: "Email not verified. Please verify your email to log in.", status: false });
-    }
     // Password is correct, generate JWT token for authentication
     const token = jwt.sign({ email }, process.env.JWT_SECRET);
     //set the token into cookie
@@ -123,27 +124,7 @@ const userController = {
       return res.status(500).json({ message: "Internal server error", status: false });
     }
   }),
-  // Backend code to handle OTP verification
-  //  verifyEmail :asyncHandler( async (req, res) => {
-  //   const { email, otp } = req.body;
-  //   console.log({ email, otp });
-  //   try {
-  //     // Find the user by email
-  //     let findUser = await User.findOne({ email, otp });
-  //     console.log(findUser);
-  //     if (!findUser) {
-  //       return res.status(400).json({ message: "Invalid OTP" });
-  //     }
-  //     // If OTP is correct, mark email as verified
-  //     User.emailVerified = true;
-  //     User = await User.save();
-  //     User = excludeFields(User.toObject(), ["password", "otp"])
-  //     return res.status(200).json({ message: "Email successfully verified", User });
-  //   } catch (error) {
-  //     console.error("Error verifying email:", error);
-  //     return res.status(500).json({ message: "Internal server error" });
-  //   }
-  // }),
+ 
 }
 
 
