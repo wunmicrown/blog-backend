@@ -18,28 +18,33 @@ const userController = {
  * @returns {Promise<void>} - A promise that resolves once the registration process is complete.
  */
   register: asyncHandler(async (req, res) => {
-
     const { username, email, password } = req.body;
-    console.log({ emailBody: email, username: username, password: password });
+
 
     const userExists = await User.findOne({ username, email });
     if (userExists) {
       return res.status(409).send("User already exists");
     }
 
-    //Hash the password
+    // Hash the password
     const hashedPassword = await bcrypt.hash(password, 10);
-    console.log("password:", hashedPassword);
+
+    // Create a new user object without including the otp field
+    const newUser = new User({
+      username,
+      email,
+      password: hashedPassword
+    });
+
+    const _newUser = excludeFields(newUser.toObject(), ['password', 'otp', '__v']);
+
+    // Save the new user
+    const savedUser = await newUser.save();
+
+    return res.status(200).json({ message: 'registered successfully', user: _newUser });
+}),
 
 
-    const newUser = new User(req.body);
-    const _newUser =excludeFields(newUser.toObject(),['password', '__v'])
-    console.log("newUser:", newUser);
-    const userSaved = await newUser.save();
-    console.log("user saved:", userSaved);
-    return res.status(200).json({ messege: 'registered successful', user: _newUser });
-
-  }),
 
   // ! Login
   /**
@@ -75,7 +80,7 @@ const userController = {
     }
 
     // Password is correct, generate JWT token for authentication
-    const token = jwt.sign({ id: user?._id}, process.env.JWT_SECRET);
+    const token = jwt.sign({ id: user?._id }, process.env.JWT_SECRET);
     console.log(token);
     //set the token into cookie
     res.cookie("token", token, {
@@ -88,8 +93,8 @@ const userController = {
     return res.status(200).json({
       message: "Login successful",
       status: true,
-      user: _user, 
-      token:token
+      user: _user,
+      token: token
     });
   }),
 
