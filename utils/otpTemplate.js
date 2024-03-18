@@ -1,4 +1,4 @@
-const otpEmailTemplate=(username, otp)=>{
+const otpEmailTemplate=(username, otpGen)=>{
     return `
     <!DOCTYPE html>
     <html lang="en">
@@ -13,10 +13,10 @@ const otpEmailTemplate=(username, otp)=>{
     <p style=" font-weight: 500;">Dear ${username},</p>
 
     <p style=" font-weight: 300;">
-      Thank you for registering with our<span style="color: #3F6CCE;">Blog app </span>app. 
+      Thank you for registering with our<span style="color: #3F6CCE;"> Blog app </span>app. 
       Please use the following OTP to verify your email address:
     </p>
-    <h2>${otp}</h2>
+    <h2>${otpGen}</h2>
 
     <p>Thanks and kind regards.</p>
     </div>

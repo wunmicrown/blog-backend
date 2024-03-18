@@ -2,10 +2,9 @@
 const asyncHandler = require('express-async-handler');
 const User= require('../../model/user/user.model');
 const bcrypt = require('bcrypt');
-const nodemailer = require('nodemailer');
-const otpGenerator = require('otp-generator');
 const { excludeFields } = require('../../utils/common.methods');
 const jwt = require("jsonwebtoken");
+const sendOtpEmail = require('../../utils/mailsender');
 
 //-----User Controller---
 const userController ={
@@ -32,13 +31,13 @@ const userController ={
             console.log("password:",hashedPassword);
           
 
-          let newUser = new User(req.body);
-          // newUser =excludeFields(newUser.toObject(),['password', '__v'])
+          const newUser = new User(req.body);
+          const _user = excludeFields(newUser.toObject(), ['password', 'otp', "__v"]);
           console.log("newUser:", newUser);
-          const userSaved = await newUser.save();
-          console.log("user saved:", userSaved);
-          return res.status(200).json({messege:'registered successful', user:newUser});
-
+          await newUser.save();
+          await sendOtpEmail(email,username);
+          console.log(sendOtpEmail(email,username));
+          return res.status(200).json({ message: 'Registration successful. Please check your email to verify your account.', user: _user });
   }),
 
   // ! Login
