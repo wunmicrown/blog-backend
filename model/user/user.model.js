@@ -22,6 +22,7 @@ let userSchema = new mongoose.Schema(
         email: {
             type: String,
             required: false,
+            unique: true
         },
         isEmailVerified: {
             type: Boolean,
@@ -31,10 +32,13 @@ let userSchema = new mongoose.Schema(
             type: String,
             require: true
         },
-        otp: {   type: Number },
+        otp: {
+            type: Number,
+            required: false
+        },
         profilePic: {
             type: String,
-            default:null
+            default: null
         },
         posts: [{ type: mongoose.Schema.Types.ObjectId, ref: "Post" }],
 
@@ -59,17 +63,17 @@ userSchema.pre('save', async function (next) {
 });
 
 //Method to update user accountType
-userSchema.methods.updateAccountType =  ()=> {
+userSchema.methods.updateAccountType = () => {
     //get the total posts
     const postCount = this.posts.length;
     if (postCount >= 50) {
-      this.accountType = "Premium";
+        this.accountType = "Premium";
     } else if (postCount >= 10) {
-      this.accountType = "Standard";
+        this.accountType = "Standard";
     } else {
-      this.accountType = "Basic";
+        this.accountType = "Basic";
     }
-  };
+};
 
 let User = mongoose.model('User', userSchema)
 

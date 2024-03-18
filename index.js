@@ -2,15 +2,18 @@
 const express = require('express');
 const usersRouter = require('./routes/user/usersRoutes');
 const app = express();
+const cookieParser = require("cookie-parser");
 require("dotenv").config(); // load environment variables from .env file
 let PORT = process.env.PORT || 4000;
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
+app.use(cookieParser()); //automattically parses the cookie
+
 
 app.get('/', (req, res) => {
-    return res.status(200).send('App is Woking')
+    return res.status(200).json({ message: "Welcome to Blog Project" })
 })
 app.use("/api/v1/users", usersRouter)
 
