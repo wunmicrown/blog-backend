@@ -1,5 +1,7 @@
 const {
-    registerPayloadValidator
+    registerPayloadValidator, 
+    loginPayLoadValidator,
+    schemaValidatorHandler
 } = require("./isAuthSchema");
 
 
@@ -8,25 +10,25 @@ const {
  * @param {string} path  request path name
  * @returns Joi.object
  */
-const SchemaMapper = (path) => {
+const authSchemaMapper = (path) => {
     switch (path) {
         case "/register":
             return registerPayloadValidator
-        case "/signin":
-            return signinPayLoadValidator
-        case "/resetEmail":
-            return resetEmailPayLoad
-        case "/resetpassword":
-            return resetPasswordlPayLoad
-        default:
-            return wildCardValidator
+        case "/login":
+            return loginPayLoadValidator
+        // case "/resetEmail":
+        //     return resetEmailPayLoad
+        // case "/resetpassword":
+        //     return resetPasswordlPayLoad
+        // default:
+        //     return wildCardValidator
 
     }
 }
 
 const ValidatorMDW = async (req, res, next) => {
     const { path } = req.route
-    const validatorSchema = SchemaMapper(path)
+    const validatorSchema = authSchemaMapper(path)
     const { valid, error } = await schemaValidatorHandler(validatorSchema, req.body)
     if (!valid) {
         return res.status(400).json(error);
@@ -36,6 +38,6 @@ const ValidatorMDW = async (req, res, next) => {
 }
 
 module.exports = {
-    SchemaMapper,
+    authSchemaMapper,
     ValidatorMDW
 }
