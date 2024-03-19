@@ -17,8 +17,8 @@ const sendOtpEmail = async (email, username) => {
     // Create SMTP transporter
       let transporter = nodemailer.createTransport({
         host: process.env.MAIL_HOST,
-        port: 465,
-        secure: true,
+        port: process.env.MAIL_PORT,
+        secure: process.env.MAIL_USE_TLS,
         auth: {
           user: process.env.MAIL_USER,
           pass: process.env.MAIL_PASS,
