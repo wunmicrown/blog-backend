@@ -8,6 +8,7 @@ usersRouter.post("/register", ValidatorMDW, userController.register);
 usersRouter.post("/login", ValidatorMDW, userController.login);
 usersRouter.post("/verify-email", userController.verifyEmail);
 usersRouter.post("/reset-email", userController.resetEmail);
+usersRouter.post("/reset-password", ValidatorMDW, userController.resetPassword);
 
 
 module.exports = usersRouter;

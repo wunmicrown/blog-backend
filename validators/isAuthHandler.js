@@ -1,7 +1,8 @@
 const {
     registerPayloadValidator, 
     loginPayLoadValidator,
-    schemaValidatorHandler
+    schemaValidatorHandler,
+    resetPasswordlPayLoad
 } = require("./isAuthSchema");
 
 
@@ -16,10 +17,10 @@ const authSchemaMapper = (path) => {
             return registerPayloadValidator
         case "/login":
             return loginPayLoadValidator
+            case "/reset-password":
+                return resetPasswordlPayLoad
         // case "/resetEmail":
         //     return resetEmailPayLoad
-        // case "/resetpassword":
-        //     return resetPasswordlPayLoad
         // default:
         //     return wildCardValidator
 

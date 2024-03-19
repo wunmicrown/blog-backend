@@ -6,6 +6,7 @@ const { excludeFields } = require('../../utils/common.methods');
 const jwt = require("jsonwebtoken");
 const { sendOtpEmail } = require('../../utils/mails/mailsender');
 const { resetEmailOtp } = require('../../utils/mails/resetmailSender');
+const { schemaValidatorHandler, resetPasswordlPayLoad } = require('../../validators/isAuthSchema');
 
 //-----User Controller---
 const userController = {
@@ -107,16 +108,16 @@ const userController = {
     console.log("email:", email, "otp:", otp);
     try {
       // Find the user by email
-      const user = await User.findOne({ email });
-
-      // // Check if user exists and OTP is correct
-      // if (!user || user.otp !== otp) {
-      //   return res.status(400).json({ message: "Invalid OTP", status: false });
-      // }
+      const userDetails = await User.findOne({ email });
+      console.log(userDetails)
+      // Check if user exists and OTP is correct
+      if (!userDetails || userDetails.otp !== otp) {
+        return res.status(400).json({ message: "Invalid OTP", status: false });
+      }
 
       // Mark email as verified
-      user.isEmailVerified = true;
-      const savedUser = await user.save();
+      userDetails.isEmailVerified = true;
+      const savedUser = await userDetails.save();
       console.log(savedUser);
 
       return res.status(200).json({ message: "Email successfully verified", status: true });
@@ -126,6 +127,7 @@ const userController = {
     }
   }),
 
+  // !ResetEmail
   /**
  * Resets the email verification OTP (One-Time Password) for a user and sends the new OTP to their email address.
  * 
@@ -158,6 +160,48 @@ const userController = {
       res.status(500).json({ message: 'Oops! Something went wrong', status: false });
     }
   }),
+
+  // !ResetPassword
+  /**
+ * Resets the password for a user and updates it in the database.
+ * 
+ * @param {Object} req - The request object containing the user's email and new password in the body.
+ * @param {Object} res - The response object to send back to the client.
+ * @returns {Promise<void>} - A promise that resolves once the password reset process is complete.
+ */
+ resetPassword : asyncHandler (async (req, res) => {
+  const { email, newPassword } = req.body;
+  console.log("email:",email, "newPassword:", newPassword);
+
+  try {
+    // Validate the request payload
+  //   const validationResult = await schemaValidatorHandler(resetPasswordlPayLoad, { password: newPassword, email });
+  //  console.log(validationResult)
+  //   if (!validationResult.valid) {
+  //     return res.status(400).json({ message: "Invalid request payload", errors: validationResult.error });
+  //   }
+    if (!email || !newPassword) {
+      return res.status(400).json({ message: "Missing required fields", status: false });
+    }
+    // Hash the new password
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    // Update the user's password in the database
+    const updateUser = await User.findOneAndUpdate({ email }, { password: hashedPassword });
+      console.log(updateUser)
+    if (updateUser) {
+      // Password reset successful
+      return res.status(200).json({ message: 'Password reset successful', status: true });
+    } else {
+      // User not found
+      return res.status(404).json({ message: 'User not found', status: false });
+    }
+  } catch (error) {
+    // Handle errors
+    console.error('Error resetting password:', error);
+    return res.status(500).json({ message: 'Internal server error', status: false });
+  }
+}),
 
 }
 

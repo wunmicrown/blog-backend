@@ -27,6 +27,14 @@ const loginPayLoadValidator = Joi.object({
 
 })
 
+// The payload object for resetPasswordPayload
+const resetPasswordlPayLoad = Joi.object({
+    email: Joi.string().email().required(),
+    newPassword: Joi.string().pattern(new RegExp('^[a-zA-Z0-9]{8,}$')).required(),
+    password: Joi.string().pattern(new RegExp('^[a-zA-Z0-9]{8,}$')).required(),
+    confirmPassword: Joi.string().pattern(new RegExp('^[a-zA-Z0-9]{8,}$')).required(),
+    termsAccepted: Joi.boolean().required(),
+});
 
 /**
  * 
@@ -44,6 +52,7 @@ const schemaValidatorHandler = async (validatorSchema, payload) => {
         return { valid: false, error: messages }
     }
 }
+
 
 
 // The payload object for reset email
@@ -67,13 +76,7 @@ const schemaValidatorHandler = async (validatorSchema, payload) => {
 //     file: Joi.string().required(),
 // })
 
-// The payload object for resetPasswordPayload
-// const resetPasswordlPayLoad = Joi.object({
-//     // email: Joi.string().email().required(),
-//     newPassword: Joi.string().pattern(new RegExp('^[a-zA-Z0-9]{8,}$')).required(),
-//     confirmPassword: Joi.string().pattern(new RegExp('^[a-zA-Z0-9]{8,}$')).required(),
-//     termsAccepted: Joi.boolean().required(),
-// });
+
 
 
 const wildCardValidator = Joi.object({})
@@ -82,10 +85,10 @@ module.exports = {
     schemaValidatorHandler,
     registerPayloadValidator,
     loginPayLoadValidator,
+    resetPasswordlPayLoad,
     // resetEmailPayLoad,
     // verifyOTPPayLoad,
     // resendOTPPayLoad,
     // uploadFilePayLoad,
-    // resetPasswordlPayLoad,
     wildCardValidator
 };
