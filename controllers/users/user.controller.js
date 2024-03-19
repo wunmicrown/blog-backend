@@ -108,10 +108,10 @@ const userController = {
     console.log("email:", email, "otp:", otp);
     try {
       // Find the user by email
-      const userDetails = await User.findOne({ email });
+      const userDetails = await User.findOne({ email, otp });
       console.log(userDetails)
       // Check if user exists and OTP is correct
-      if (!userDetails || userDetails.otp !== otp) {
+      if (!userDetails || !otp) {
         return res.status(400).json({ message: "Invalid OTP", status: false });
       }
 
