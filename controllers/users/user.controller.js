@@ -207,7 +207,7 @@ changePassword :asyncHandler( async (req, res) => {
     const hashedNewPassword = await bcrypt.hash(newPassword, 10);
 
     // Find the user by email and update the password
-    const user = await Student.findOneAndUpdate({ email }, { password: hashedNewPassword }, { new: true });
+    const user = await User.findOneAndUpdate({ email }, { password: hashedNewPassword }, { new: true });
     console.log(user);
     // Check if user exists
     if (!user) {

@@ -10,7 +10,7 @@ usersRouter.post("/login", ValidatorMDW, userController.login);
 usersRouter.post("/verify-email", userController.verifyEmail);
 usersRouter.post("/reset-email", userController.resetEmail);
 usersRouter.post("/reset-password", ValidatorMDW, userController.resetPassword);
-usersRouter.post("/change-password", TOKEN_MIDDLEWARE, userController.changePassword);
+usersRouter.post("/change-password", userController.changePassword);
 
 
 module.exports = usersRouter;
