@@ -4,7 +4,8 @@ const User = require('../../model/user/user.model');
 const bcrypt = require('bcrypt');
 const { excludeFields } = require('../../utils/common.methods');
 const jwt = require("jsonwebtoken");
-const sendOtpEmail = require('../../utils/mailsender');
+const { sendOtpEmail } = require('../../utils/mails/mailsender');
+const { resetEmailOtp } = require('../../utils/mails/resetmailSender');
 
 //-----User Controller---
 const userController = {
@@ -63,10 +64,10 @@ const userController = {
       return res.status(404).json({ message: "Invalid credentials", status: false });
     }
 
-     // Check if the email is verified
-     if (!user.isEmailVerified) {
+    // Check if the email is verified
+    if (!user.isEmailVerified) {
       return res.status(403).json({ message: "Email not verified. Please verify your email to log in.", status: false });
-  }
+    }
 
     // Log the plaintext password and the hashed password retrieved from the database
     // const match = await bcrypt.compare(password, user.password);
@@ -124,7 +125,40 @@ const userController = {
       return res.status(500).json({ message: "Internal server error", status: false });
     }
   }),
- 
+
+  /**
+ * Resets the email verification OTP (One-Time Password) for a user and sends the new OTP to their email address.
+ * 
+ * @param {Object} req - The request object containing the user's email in the body.
+ * @param {Object} res - The response object to send back to the client.
+ * @returns {Promise<void>} - A promise that resolves once the OTP reset process is complete.
+ */
+  resetEmail: asyncHandler(async (req, res) => {
+    const { email } = req.body;
+    console.log("email:",email)
+    try {
+      // Find the user by email
+      const userEmail = await User.findOne({ email });
+      console.log("userEmail:",userEmail);
+
+      if (userEmail) {
+
+        await userEmail.save();
+        await resetEmailOtp(email);
+        console.log(resetEmailOtp(email));
+        // Send success response
+        res.status(200).json({ message: 'OTP sent and user updated successfully', status: true });
+      } else {
+        // User not found
+        res.status(404).json({ message: 'User does not exist', status: false });
+      }
+    } catch (err) {
+      // Handle errors
+      console.error('Error sending OTP:', err);
+      res.status(500).json({ message: 'Oops! Something went wrong', status: false });
+    }
+  }),
+
 }
 
 
