@@ -6,7 +6,6 @@ const { excludeFields } = require('../../utils/common.methods');
 const jwt = require("jsonwebtoken");
 const { sendOtpEmail } = require('../../utils/mails/mailsender');
 const { resetEmailOtp } = require('../../utils/mails/resetmailSender');
-const { schemaValidatorHandler, resetPasswordlPayLoad } = require('../../validators/isAuthSchema');
 
 //-----User Controller---
 const userController = {
@@ -169,39 +168,36 @@ const userController = {
  * @param {Object} res - The response object to send back to the client.
  * @returns {Promise<void>} - A promise that resolves once the password reset process is complete.
  */
- resetPassword : asyncHandler (async (req, res) => {
-  const { email, newPassword } = req.body;
-  console.log("email:",email, "newPassword:", newPassword);
+  resetPassword: asyncHandler(async (req, res) => {
+    const { email, newPassword } = req.body;
+    console.log("email:", email, "newPassword:", newPassword);
 
-  try {
     // Validate the request payload
-  //   const validationResult = await schemaValidatorHandler(resetPasswordlPayLoad, { password: newPassword, email });
-  //  console.log(validationResult)
-  //   if (!validationResult.valid) {
-  //     return res.status(400).json({ message: "Invalid request payload", errors: validationResult.error });
-  //   }
     if (!email || !newPassword) {
-      return res.status(400).json({ message: "Missing required fields", status: false });
+        return res.status(400).json({ message: "Missing required fields", status: false });
     }
+
     // Hash the new password
     const hashedPassword = await bcrypt.hash(newPassword, 10);
-
+    console.log(hashedPassword)
     // Update the user's password in the database
-    const updateUser = await User.findOneAndUpdate({ email }, { password: hashedPassword });
-      console.log(updateUser)
-    if (updateUser) {
-      // Password reset successful
-      return res.status(200).json({ message: 'Password reset successful', status: true });
-    } else {
-      // User not found
-      return res.status(404).json({ message: 'User not found', status: false });
+    try {
+        const updateUser = await User.findOneAndUpdate({ email }, { password: hashedPassword });
+        console.log(updateUser)
+        if (updateUser) {
+            // Password reset successful
+            return res.status(200).json({ message: 'Password reset successful', status: true });
+        } else {
+            // User not found
+            return res.status(404).json({ message: 'User not found', status: false });
+        }
+    } catch (error) {
+        // Handle other errors
+        console.error('Error resetting password:', error);
+        return res.status(500).json({ message: 'Internal server error', status: false });
     }
-  } catch (error) {
-    // Handle errors
-    console.error('Error resetting password:', error);
-    return res.status(500).json({ message: 'Internal server error', status: false });
-  }
 }),
+
 
 }
 
