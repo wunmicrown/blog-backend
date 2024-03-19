@@ -1,11 +1,19 @@
 'use strict'
-const asyncHandler = require('express-async-handler');
-const User = require('../../model/user/user.model');
 const bcrypt = require('bcrypt');
+const asyncHandler = require('express-async-handler');
+const nodemailer = require("nodemailer");
+const User = require('../../model/user/user.model');
 const { excludeFields } = require('../../utils/common.methods');
 const jwt = require("jsonwebtoken");
 const { sendOtpEmail } = require('../../utils/mails/mailsender');
 const { resetEmailOtp } = require('../../utils/mails/resetmailSender');
+const { changedEmailTemplate } = require('../../utils/otpTemplate');
+
+// global varibale for genarating OTP
+const generateSixDigitNumber = () => {
+  return Math.floor(Math.random() * 900000) + 100000;
+};
+
 
 //-----User Controller---
 const userController = {
@@ -227,6 +235,55 @@ changePassword :asyncHandler( async (req, res) => {
   } catch (error) {
     console.error('Error changing password:', error);
     return res.status(500).json({ message: 'Internal server error' });
+  }
+}),
+
+ changeEmail : asyncHandler (async (req, res) => {
+  try {
+    const { email } = req.body;
+    const userId = req.auth_id; // Extract user ID from authenticated request
+
+    // Check if the new email is already in use
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({ message: 'Email address is already in use' });
+    }
+
+    // Generate OTP
+    const otp = generateSixDigitNumber(); // You need to implement this function
+
+    // Fetch user data
+    const user = await User.findById(userId);
+
+    // Send OTP to the new email address (you can use a service like SendGrid or implement your own email sending logic)
+    const mailOptions = {
+      from:`"Blogify" ${process.env.MAIL_USER}`,
+      to: email,
+      subject: 'Verify Your Email',
+      html: changedEmailTemplate(user.firstName, otp) // Assuming you have access to firstName in your user model
+    };
+
+    transporter.sendMail(mailOptions, function (error, info) {
+      if (error) {
+        console.log(error);
+        res.status(500).send("Failed to send verification email");
+      } else {
+        console.log('Email sent: ' + info.response);
+        res.status(201).send({ message: "Verification OTP sent to email.", user: user });
+      }
+    });
+
+    // Save the OTP in the user's document in the database
+    const updatedUser = await User.findByIdAndUpdate(userId, { email, otp }, { new: true });
+
+    if (!updatedUser) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    res.json({ status: true, message: 'OTP sent to your email address for verification' });
+  } catch (error) {
+    console.error('Error updating email:', error);
+    res.status(500).json({ message: 'Server error' });
   }
 }),
 

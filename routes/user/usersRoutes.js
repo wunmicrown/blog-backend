@@ -11,6 +11,8 @@ usersRouter.post("/verify-email", userController.verifyEmail);
 usersRouter.post("/reset-email", userController.resetEmail);
 usersRouter.post("/reset-password", ValidatorMDW, userController.resetPassword);
 usersRouter.post("/change-password", userController.changePassword);
+usersRouter.post("/change-email", TOKEN_MIDDLEWARE, userController.changeEmail);
+
 
 
 module.exports = usersRouter;
