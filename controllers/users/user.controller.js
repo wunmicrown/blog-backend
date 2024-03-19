@@ -13,6 +13,15 @@ const { changedEmailTemplate } = require('../../utils/otpTemplate');
 const generateSixDigitNumber = () => {
   return Math.floor(Math.random() * 900000) + 100000;
 };
+const transporter = nodemailer.createTransport({
+  host: process.env.MAIL_HOST,
+  port: process.env.MAIL_PORT,
+  secure: process.env.MAIL_USE_TLS , // Convert string to boolean
+  auth: {
+    user: process.env.MAIL_USER,
+    pass: process.env.MAIL_PASS,
+  }
+});
 
 
 //-----User Controller---
@@ -144,11 +153,11 @@ const userController = {
  */
   resetEmail: asyncHandler(async (req, res) => {
     const { email } = req.body;
-    console.log("email:",email)
+    console.log("email:", email)
     try {
       // Find the user by email
       const userEmail = await User.findOne({ email });
-      console.log("userEmail:",userEmail);
+      console.log("userEmail:", userEmail);
 
       if (userEmail) {
 
@@ -182,7 +191,7 @@ const userController = {
 
     // Validate the request payload
     if (!email || !newPassword) {
-        return res.status(400).json({ message: "Missing required fields", status: false });
+      return res.status(400).json({ message: "Missing required fields", status: false });
     }
 
     // Hash the new password
@@ -190,102 +199,102 @@ const userController = {
     console.log(hashedPassword)
     // Update the user's password in the database
     try {
-        const updateUser = await User.findOneAndUpdate({ email }, { password: hashedPassword });
-        console.log(updateUser)
-        if (updateUser) {
-            // Password reset successful
-            return res.status(200).json({ message: 'Password reset successful', status: true });
-        } else {
-            // User not found
-            return res.status(404).json({ message: 'User not found', status: false });
-        }
-    } catch (error) {
-        // Handle other errors
-        console.error('Error resetting password:', error);
-        return res.status(500).json({ message: 'Internal server error', status: false });
-    }
-}),
-
-changePassword :asyncHandler( async (req, res) => {
-  try {
-    const { email, oldPassword, newPassword } = req.body;
-    console.log({ email, oldPassword, newPassword });
-
-    // Hash the new password
-    const hashedNewPassword = await bcrypt.hash(newPassword, 10);
-
-    // Find the user by email and update the password
-    const user = await User.findOneAndUpdate({ email }, { password: hashedNewPassword }, { new: true });
-    console.log(user);
-    // Check if user exists
-    if (!user) {
-      return res.status(404).json({ message: 'User not found' });
-    }
-
-    // Compare the old password provided with the hashed password stored in the database
-    const isPasswordValid = await bcrypt.compare(oldPassword, user.password);
-    console.log(isPasswordValid);
-    // If the old password is not valid, return an error
-    if (isPasswordValid) {
-      return res.status(400).json({ message: 'Invalid old password' });
-    }
-
-    // Return a success response
-    return res.status(200).json({ message: 'Password updated successfully' });
-  } catch (error) {
-    console.error('Error changing password:', error);
-    return res.status(500).json({ message: 'Internal server error' });
-  }
-}),
-
- changeEmail : asyncHandler (async (req, res) => {
-  try {
-    const { email } = req.body;
-    const userId = req.auth_id; // Extract user ID from authenticated request
-
-    // Check if the new email is already in use
-    const existingUser = await User.findOne({ email });
-    if (existingUser) {
-      return res.status(400).json({ message: 'Email address is already in use' });
-    }
-
-    // Generate OTP
-    const otp = generateSixDigitNumber(); // You need to implement this function
-
-    // Fetch user data
-    const user = await User.findById(userId);
-
-    // Send OTP to the new email address (you can use a service like SendGrid or implement your own email sending logic)
-    const mailOptions = {
-      from:`"Blogify" ${process.env.MAIL_USER}`,
-      to: email,
-      subject: 'Verify Your Email',
-      html: changedEmailTemplate(user.firstName, otp) // Assuming you have access to firstName in your user model
-    };
-
-    transporter.sendMail(mailOptions, function (error, info) {
-      if (error) {
-        console.log(error);
-        res.status(500).send("Failed to send verification email");
+      const updateUser = await User.findOneAndUpdate({ email }, { password: hashedPassword });
+      console.log(updateUser)
+      if (updateUser) {
+        // Password reset successful
+        return res.status(200).json({ message: 'Password reset successful', status: true });
       } else {
-        console.log('Email sent: ' + info.response);
-        res.status(201).send({ message: "Verification OTP sent to email.", user: user });
+        // User not found
+        return res.status(404).json({ message: 'User not found', status: false });
       }
-    });
-
-    // Save the OTP in the user's document in the database
-    const updatedUser = await User.findByIdAndUpdate(userId, { email, otp }, { new: true });
-
-    if (!updatedUser) {
-      return res.status(404).json({ message: 'User not found' });
+    } catch (error) {
+      // Handle other errors
+      console.error('Error resetting password:', error);
+      return res.status(500).json({ message: 'Internal server error', status: false });
     }
+  }),
 
-    res.json({ status: true, message: 'OTP sent to your email address for verification' });
-  } catch (error) {
-    console.error('Error updating email:', error);
-    res.status(500).json({ message: 'Server error' });
-  }
-}),
+  changePassword: asyncHandler(async (req, res) => {
+    try {
+      const { email, oldPassword, newPassword } = req.body;
+      console.log({ email, oldPassword, newPassword });
+
+      // Hash the new password
+      const hashedNewPassword = await bcrypt.hash(newPassword, 10);
+
+      // Find the user by email and update the password
+      const user = await User.findOneAndUpdate({ email }, { password: hashedNewPassword }, { new: true });
+      console.log(user);
+      // Check if user exists
+      if (!user) {
+        return res.status(404).json({ message: 'User not found' });
+      }
+
+      // Compare the old password provided with the hashed password stored in the database
+      const isPasswordValid = await bcrypt.compare(oldPassword, user.password);
+      console.log(isPasswordValid);
+      // If the old password is not valid, return an error
+      if (isPasswordValid) {
+        return res.status(400).json({ message: 'Invalid old password' });
+      }
+
+      // Return a success response
+      return res.status(200).json({ message: 'Password updated successfully' });
+    } catch (error) {
+      console.error('Error changing password:', error);
+      return res.status(500).json({ message: 'Internal server error' });
+    }
+  }),
+
+  changeEmail: asyncHandler(async (req, res) => {
+    try {
+      const { email } = req.body;
+      const userId = req.auth_id; // Extract user ID from authenticated request
+
+      // Check if the new email is already in use
+      const existingUser = await User.findOne({ email });
+      if (existingUser) {
+        return res.status(400).json({ message: 'Email address is already in use' });
+      }
+
+      // Generate OTP
+      const otp = generateSixDigitNumber(); // You need to implement this function
+
+      // Fetch user data
+      const user = await User.findById(userId);
+
+      // Send OTP to the new email address 
+      const mailOptions = {
+        from: `"Blogify" ${process.env.MAIL_USER}`,
+        to: email,
+        subject: 'Verify Your Email',
+        html: changedEmailTemplate(user.username, otp) // Assuming you have access to firstName in your user model
+      };
+
+      transporter.sendMail(mailOptions, function (error, info) {
+        if (error) {
+          console.log(error);
+          res.status(500).send("Failed to send verification email");
+        } else {
+          console.log('Email sent: ' + info.response);
+          res.status(201).send({ message: "Verification OTP sent to email.", user: user });
+        }
+      });
+
+      // Save the OTP in the user's document in the database
+      const updatedUser = await User.findByIdAndUpdate(userId, { email, otp }, { new: true });
+
+      if (!updatedUser) {
+        return res.status(404).json({ message: 'User not found' });
+      }
+
+      res.json({ status: true, message: 'OTP sent to your email address for verification' });
+    } catch (error) {
+      console.error('Error updating email:', error);
+      res.status(500).json({ message: 'Server error' });
+    }
+  }),
 
 }
 

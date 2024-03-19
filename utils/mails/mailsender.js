@@ -15,14 +15,14 @@ const sendOtpEmail = async (email, username) => {
     // Generate an OTP for email verification
     const otpGen =generateSixDigitNumber()
     // Create SMTP transporter
-      let transporter = nodemailer.createTransport({
-        host: process.env.MAIL_HOST,
-        port: process.env.MAIL_PORT,
-        secure: process.env.MAIL_USE_TLS,
-        auth: {
-          user: process.env.MAIL_USER,
-          pass: process.env.MAIL_PASS,
-        },
+        let transporter = nodemailer.createTransport({
+            host: process.env.MAIL_HOST,
+            port: process.env.MAIL_PORT,
+            secure: process.env.MAIL_USE_TLS,
+            auth: {
+            user: process.env.MAIL_USER,
+            pass: process.env.MAIL_PASS,
+            },
       });
   
       // Email messege
