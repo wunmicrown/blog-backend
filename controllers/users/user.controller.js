@@ -198,6 +198,37 @@ const userController = {
     }
 }),
 
+changePassword :asyncHandler( async (req, res) => {
+  try {
+    const { email, oldPassword, newPassword } = req.body;
+    console.log({ email, oldPassword, newPassword });
+
+    // Hash the new password
+    const hashedNewPassword = await bcrypt.hash(newPassword, 10);
+
+    // Find the user by email and update the password
+    const user = await Student.findOneAndUpdate({ email }, { password: hashedNewPassword }, { new: true });
+    console.log(user);
+    // Check if user exists
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Compare the old password provided with the hashed password stored in the database
+    const isPasswordValid = await bcrypt.compare(oldPassword, user.password);
+    console.log(isPasswordValid);
+    // If the old password is not valid, return an error
+    if (isPasswordValid) {
+      return res.status(400).json({ message: 'Invalid old password' });
+    }
+
+    // Return a success response
+    return res.status(200).json({ message: 'Password updated successfully' });
+  } catch (error) {
+    console.error('Error changing password:', error);
+    return res.status(500).json({ message: 'Internal server error' });
+  }
+}),
 
 }
 
