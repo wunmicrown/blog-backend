@@ -3,6 +3,7 @@ const express = require('express');
 const usersRouter = require('./routes/user/usersRoutes');
 const app = express();
 const cookieParser = require("cookie-parser");
+const postRouter = require('./routes/post/postsRouter');
 require("dotenv").config(); // load environment variables from .env file
 let PORT = process.env.PORT || 4000;
 
@@ -16,6 +17,8 @@ app.get('/', (req, res) => {
     return res.status(200).json({ message: "Welcome to Blog Project" })
 })
 app.use("/api/v1/users", usersRouter)
+app.use("/api/v1/posts", postRouter);
+
 
 //!Not found
 app.use((req, res, next) => {
