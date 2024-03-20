@@ -3,8 +3,6 @@ const multer = require("multer");
 const { TOKEN_MIDDLEWARE } = require("../../middleWares/authenticateToken");
 const postController = require("../../controllers/posts/post.controller");
 
-//create multer instance
-const upload = multer({ storage });
 
 //!create instance express router
 const postRouter = express.Router();
@@ -14,7 +12,6 @@ const postRouter = express.Router();
 postRouter.post(
     "/create",
     TOKEN_MIDDLEWARE,
-    upload.single("image"),
     postController.createPost
   );
 
