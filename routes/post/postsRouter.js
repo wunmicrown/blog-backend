@@ -9,11 +9,7 @@ const postRouter = express.Router();
 
 //-----Create post----
 
-postRouter.post(
-    "/create",
-    TOKEN_MIDDLEWARE,
-    postController.createPost
-  );
+postRouter.post( "/create",TOKEN_MIDDLEWARE, postController.createPost);
 
 
 
