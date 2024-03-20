@@ -9,6 +9,8 @@ let PORT = process.env.PORT || 4000;
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+// Serve uploaded files statically from the 'uploads' directory
+app.use("/uploads", express.static("uploads"))
 
 app.use(cookieParser()); //automattically parses the cookie
 

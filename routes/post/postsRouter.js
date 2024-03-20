@@ -1,5 +1,4 @@
 const express = require("express");
-const multer = require("multer");
 const { TOKEN_MIDDLEWARE } = require("../../middleWares/authenticateToken");
 const postController = require("../../controllers/posts/post.controller");
 
