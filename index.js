@@ -14,7 +14,6 @@ app.use("/uploads", express.static("uploads"))
 
 app.use(cookieParser()); //automattically parses the cookie
 
-
 app.get('/', (req, res) => {
     return res.status(200).json({ message: "Welcome to Blog Project" })
 })
