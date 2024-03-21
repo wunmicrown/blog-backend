@@ -20,6 +20,7 @@ const postController ={
   }
    // find the user
    const userFound = await User.findById(req.user);
+   console.log("userFound:",userFound);
    if (!userFound) {
      throw new Error("User not found");
    }
