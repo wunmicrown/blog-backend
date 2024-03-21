@@ -1,13 +1,25 @@
 const asyncHandler = require("express-async-handler");
-const User = require("../../model/user/user.model");
 const { excludeFields } = require("../../utils/common.methods");
 const { cloudDelete } = require("../../utils/cloudinary.utils");
+const User = require("../../model/user/user.model");
+const Post = require("../../model/post/post.model");
 require('fs').promises;
 
 const postController ={
 
  //!Create post
- createPost: asyncHandler(async (req, res) => {}),
+ createPost: asyncHandler(async (req, res) => {
+  const { title, description } = req.body;
+  console.log("title",title, "description",description);
+  const user = await User.findById(req.auth_id);
+  const post = await Post.create({
+    title,
+    description,
+    user: user._id,
+  });
+  return res.status(200).json({ message: 'Post created successfully', post });
+ }),
+
  uploads: asyncHandler(async (req, res) => {
   if (!req.file || Object.keys(req.file).length === 0) {
     return res.status(400).json({ message: 'No files were uploaded.' });

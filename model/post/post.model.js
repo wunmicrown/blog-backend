@@ -5,9 +5,9 @@ const postSchema = new Schema(
   {
     title: { type: String, required: true, trim: true },
     coverImgUrl: {
-      type: String,
+      type: Object,
     },
-    content: { type: String, required: true },
+    description: { type: String},
     author: {
       type: Schema.Types.ObjectId,
       ref: "User",
@@ -20,9 +20,10 @@ const postSchema = new Schema(
     dislikes: [{ type:Schema.Types.ObjectId, ref: "User" }],
     viewers: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
     // Comments
-    comments: { type: Array, default: [] },
+    comments: [{ type: Schema.Types.ObjectId, ref: "comment" }],
   },
   { timestamp:true}
 );
 
-module.exports = mongoose.model("Post", postSchema);
+let Post = mongoose.model("Post", postSchema);
+module.exports = Post;
