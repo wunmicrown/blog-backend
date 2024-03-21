@@ -14,5 +14,4 @@ usersRouter.post("/change-password", userController.changePassword);
 usersRouter.post("/change-email", TOKEN_MIDDLEWARE, userController.changeEmail);
 
 
-
 module.exports = usersRouter;

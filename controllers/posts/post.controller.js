@@ -1,5 +1,7 @@
 const asyncHandler = require("express-async-handler");
 const User = require("../../model/user/user.model");
+const { excludeFields } = require("../../utils/common.methods");
+const { cloudDelete } = require("../../utils/cloudinary.utils");
 require('fs').promises;
 
 const postController ={
@@ -13,39 +15,16 @@ const postController ={
           return res.status(400).json({ message: 'No files were uploaded.' });
         }
     
-        // const user = await User.findByIdAndUpdate(
-        //     {_id:req.auth_id}, {$set: {profilePic: req.file.path}}, {new: true, upsert:true}
-        //)
-    
         const user = await User.findById(req.auth_id);
+        console.log("User:",user);
         oldPic = user.profilePic ?? null;
         if (oldPic) {
-    
-          // Below for disk storage deletion
-          /*const  oldPicPath = path.join(process.cwd(), oldPic)
-          try {
-            await fs.unlink(oldPicPath)   
-          } catch (error) {
-            //
-          } 
-          */
     
           // Below for cloudinary deletion
           let id = oldPic.split('/').pop().split('.')[0];
           const { status, error } = await cloudDelete(id);
           if (!status) console.log(error);
         }
-    
-        // Below for ordianry cloudinary uploading without using (multer-storage-cloudinary)
-        /*
-        newPicPath = path.join(process.cwd(), req.file.path)
-        const { object: cloudinaryObject, error } = await cloudUpload(newPicPath);
-        if (error) {
-          return res.status(500).json({ message: error.message })
-        }
-        await fs.unlink(newPicPath)
-        user.profilePic = cloudinaryObject.secure_url;
-        */
     
         // Using (multer-storage-cloudinary) i.e not pre-saving file to local disk
         user.profilePic = req.file.path;
