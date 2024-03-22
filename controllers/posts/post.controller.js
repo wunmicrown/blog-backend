@@ -30,7 +30,7 @@ const postController ={
     content,
     category,
     author:req.auth_id,
-    // imagecoverImgUrl:req.file.path,
+    imagecoverImgUrl:req.file.path,
   })
 console.log("postCreated",postCreated)
    // the post was pushed into category
