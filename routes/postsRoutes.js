@@ -23,5 +23,6 @@ postsRoutes.delete("/:postId", TOKEN_MIDDLEWARE, postController.delete);
 postsRoutes.put("/:postId", TOKEN_MIDDLEWARE, multerCloudUploader.single("image"), postController.update);
 
 
-
+//---like post----
+postRoutes.put("/likes/:postId", TOKEN_MIDDLEWARE, postController.like);
 module.exports = postsRoutes;
