@@ -13,7 +13,7 @@ const postsRoutes = express.Router();
 postsRoutes.post( "/create",TOKEN_MIDDLEWARE,multerCloudUploader.single("image"), postController.createPost);
 
 //----lists all posts----
-postRoutes.get("/", postController.fetchAllPosts);
+postsRoutes.get("/", postController.fetchAllPosts);
 
 
 
