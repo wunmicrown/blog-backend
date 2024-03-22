@@ -170,6 +170,34 @@ update: asyncHandler(async (req, res) => {
   res.json({
     message: "Post Liked",
   });
+
+  
+}),
+
+//like post
+dislike: asyncHandler(async (req, res) => {
+  //Post id
+  const postId = req.params.postId;
+  //user liking a post
+  const userId =req.auth_id;
+  //Find the post
+  const post = await Post.findById(postId);
+  //Check if a user has already liked the post
+  if (post?.likes.includes(userId)) {
+    post?.likes?.pull(userId);
+  }
+  //Check if a user has already disliked the post
+  if (post?.dislikes.includes(userId)) {
+    post?.dislikes?.pull(userId);
+  } else {
+    post?.dislikes?.push(userId);
+  }
+  //resave the post
+  await post.save();
+  //send the response
+  res.json({
+    message: "Post Disliked",
+  });
 }),
 };
 
