@@ -124,7 +124,7 @@ update: asyncHandler(async (req, res) => {
   //update
   const postUpdted = await Post.findByIdAndUpdate(
     postId,
-    { content: req.body.content, coverImgUrl: req.file },
+    { content: req.body.content, image: req.file },
     {
       new: true,
     }
