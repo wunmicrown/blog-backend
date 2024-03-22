@@ -3,6 +3,7 @@ const { excludeFields } = require("../../utils/common.methods");
 const User = require("../../model/user/user.model");
 const Post = require("../../model/post/post.model");
 const Category = require("../../model/category/category.model");
+const { cloudUpload, cloudDelete } = require("../../utils/cloudinary.utils");
 require('fs').promises;
 
 const postController ={
@@ -23,14 +24,42 @@ const postController ={
    if (!userFound) {
      throw new Error("User not found");
    }
-  
+
+     // Check if the user already has a cover image
+     let oldCoverImgUrl = null;
+     if (userFound.coverImgUrl) {
+       oldCoverImgUrl = userFound.coverImgUrl;
+ 
+       // Below for cloudinary deletion of old cover image
+       let id = oldCoverImgUrl.split("/").pop().split(".")[0];
+       const { status, error } = await cloudDelete(id);
+       if (!status) {
+         console.log(error);
+         return res.status(500).json({ message: "Failed to delete old cover image." });
+       }
+     }
+
+     // Check if an image file is uploaded
+     let coverImgUrl;
+     if (req.file && req.file.path) {
+       // Use Cloudinary uploader to upload the image to the cloud
+       const uploadResult = await cloudUpload(req.file.path);
+       if (uploadResult.object && uploadResult.object.secure_url) {
+         // If upload was successful, use the secure URL of the uploaded image
+         coverImgUrl = uploadResult.object.secure_url;
+       } else {
+         // If upload failed, handle the error
+         throw new Error('Failed to upload image to Cloudinary');
+       }
+     }
+ 
   // create the post
   const postCreated = await Post.create({
     title,
     content,
     category,
     author:req.auth_id,
-    imagecoverImgUrl:req.file.path,
+    coverImgUrl,
   })
 console.log("postCreated",postCreated)
    // the post was pushed into category
