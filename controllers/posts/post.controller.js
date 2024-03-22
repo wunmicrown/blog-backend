@@ -108,6 +108,11 @@ console.log("postCreated",postCreated)
     totalPages: Math.ceil(totalPosts / limit),
   });
 }),
+
+//! update post
+update: asyncHandler(async (req, res) => {
+ 
+}),
 };
 
 module.exports = postController;

@@ -16,7 +16,7 @@ postsRoutes.post("/create", TOKEN_MIDDLEWARE, multerCloudUploader.single("image"
 postsRoutes.get("/", postController.fetchAllPosts);
 
 //----update post----
-postsRoutes.put("/postId", TOKEN_MIDDLEWARE, multerCloudUploader.single("image"), postController.update);
+postsRoutes.put("/:postId", TOKEN_MIDDLEWARE, multerCloudUploader.single("image"), postController.update);
 
 
 
