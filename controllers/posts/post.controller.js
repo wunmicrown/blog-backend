@@ -110,6 +110,5 @@ console.log("postCreated",postCreated)
 }),
 };
 
-
 module.exports = postController;
 
