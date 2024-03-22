@@ -25,4 +25,7 @@ postsRoutes.put("/:postId", TOKEN_MIDDLEWARE, multerCloudUploader.single("image"
 
 //---like post----
 postsRoutes.put("/likes/:postId", TOKEN_MIDDLEWARE, postController.like);
+postsRoutes.put("/dislikes/:postId", TOKEN_MIDDLEWARE, postController.dislike);
+
+
 module.exports = postsRoutes;
