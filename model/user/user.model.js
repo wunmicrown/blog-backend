@@ -64,15 +64,18 @@ userSchema.pre('save', async function (next) {
 
 //Method to update user accountType
 userSchema.methods.updateAccountType = () => {
-    //get the total posts
-    const postCount = this.posts.length;
-    if (postCount >= 50) {
-        this.accountType = "Premium";
-    } else if (postCount >= 10) {
-        this.accountType = "Standard";
-    } else {
-        this.accountType = "Basic";
-    }
+    userSchema.methods.updateAccountType = function () {
+        //get the total posts
+        const postCount = this.posts.length;
+        if (postCount >= 50) {
+            this.accountType = "Premium";
+        } else if (postCount >= 10) {
+            this.accountType = "Standard";
+        } else {
+            this.accountType = "Basic";
+        }
+    };
+
 };
 
 let User = mongoose.model('User', userSchema)

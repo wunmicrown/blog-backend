@@ -18,23 +18,24 @@ const postController ={
     throw new Error("Category not found");
   }
   //  // find the user
-   const userFound = await User.findById(req.user_id);
+   const userFound = await User.findById(req.auth_id);
    console.log("userFound:",userFound);
    if (!userFound) {
      throw new Error("User not found");
    }
-
+  
   // create the post
   const postCreated = await Post.create({
     title,
     content,
     category,
-    author: userFound?._id,
-    imagecoverImgUrl: req.file.path,
+    author:req.auth_id,
+    imagecoverImgUrl:req.file.path,
   })
-console.log(postCreated)
+console.log("postCreated",postCreated)
    // the post was pushed into category
    categoryFound.posts.push(categoryFound?._id);
+   console.log("categoryFound",categoryFound.posts.push(categoryFound?._id))
    //resave the category
    await categoryFound.save();
    //push the posts into user
