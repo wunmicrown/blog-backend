@@ -10,10 +10,13 @@ const postsRoutes = express.Router();
 
 //-----Create post----
 
-postsRoutes.post( "/create",TOKEN_MIDDLEWARE,multerCloudUploader.single("image"), postController.createPost);
+postsRoutes.post("/create", TOKEN_MIDDLEWARE, multerCloudUploader.single("image"), postController.createPost);
 
 //----lists all posts----
 postsRoutes.get("/", postController.fetchAllPosts);
+
+//----update post----
+postsRoutes.put("/:postId", isAuthenticated, isBlocked, upload.single("image"), postController.update);
 
 
 
