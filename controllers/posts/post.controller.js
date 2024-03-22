@@ -109,9 +109,16 @@ console.log("postCreated",postCreated)
   });
 }),
 
- //! delete
+ //! delete posts
  delete: asyncHandler(async (req, res) => {
- 
+   //get the post id from params
+   const postId = req.params.postId;
+   //find the post
+   await Post.findByIdAndDelete(postId);
+   res.json({
+     status: "success",
+     message: "Post deleted successfully",
+   });
 }),
 //! update post
 update: asyncHandler(async (req, res) => {
