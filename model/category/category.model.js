@@ -3,7 +3,7 @@ const Schema = mongoose.Schema;
 //schema
 const categorySchema = new Schema(
   {
-    // name: { type: String, required: true },
+    categoryName: { type: String, required: true },
     description: { type: String },
     posts: [{ type: Schema.Types.ObjectId, ref: "Post" }],
   },

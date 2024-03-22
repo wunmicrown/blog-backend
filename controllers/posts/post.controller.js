@@ -30,7 +30,7 @@ const postController ={
     content,
     category,
     author:req.auth_id,
-    imagecoverImgUrl:req.file.path,
+    // imagecoverImgUrl:req.file.path,
   })
 console.log("postCreated",postCreated)
    // the post was pushed into category
@@ -45,7 +45,10 @@ console.log("postCreated",postCreated)
    //save the user
    await userFound.save();
    //send the post to the client
-   return res.status(200).json({status: "success", message: 'Post created successfully', post: postCreated });
+   return res.status(200).json({
+    status: "success", message: 'Post created successfully', post: postCreated,
+    // author: userFound.username,
+  });
  }),
 };
 
