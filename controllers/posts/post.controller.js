@@ -145,6 +145,11 @@ update: asyncHandler(async (req, res) => {
     postUpdted,
   });
 }),
+
+ //like post
+ like: asyncHandler(async (req, res) => {
+ 
+}),
 };
 
 module.exports = postController;
