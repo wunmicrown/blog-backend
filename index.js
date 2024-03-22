@@ -2,9 +2,9 @@
 const express = require('express');
 const app = express();
 const cookieParser = require("cookie-parser");
-const usersRouter = require('./routes/user/usersRoutes');
-const postRouter = require('./routes/post/postsRouter');
-const categoriesRouter = require('./routes/category/categoriesRouter');
+const usersRouter = require('./routes/usersRoutes');
+const postsRoutes = require('./routes/postsRoutes');
+const categoriesRoutes = require('./routes/categoriesRoutes');
 require("dotenv").config(); // load environment variables from .env file
 let PORT = process.env.PORT || 4000;
 
@@ -20,8 +20,8 @@ app.get('/', (req, res) => {
 })
 
 app.use("/api/v1/users", usersRouter);
-app.use("/api/v1/posts", postRouter);
-app.use("/api/v1/categories", categoriesRouter);
+app.use("/api/v1/posts", postsRoutes);
+app.use("/api/v1/categories", categoriesRoutes);
 
 
 //!Not found

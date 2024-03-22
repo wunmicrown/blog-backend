@@ -37,7 +37,7 @@ const userController = {
   register: asyncHandler(async (req, res) => {
 
     const { username, email, password } = req.body;
-    console.log({ emailBody: email, username: username, password: password });
+    // console.log({ emailBody: email, username: username, password: password });
 
     const userExists = await User.findOne({ username, email });
     if (userExists) {
@@ -294,6 +294,32 @@ const userController = {
       console.error('Error updating email:', error);
       res.status(500).json({ message: 'Server error' });
     }
+  }),
+
+  uploadProfilePicture: asyncHandler(async (req, res) => {
+    if (!req.file || Object.keys(req.file).length === 0) {
+      return res.status(400).json({ message: 'No files were uploaded.' });
+    }
+  
+    const user = await User.findById(req.auth_id);
+    console.log("User:", user);
+    const oldPic = user.profilePic ?? null;
+    if (oldPic) {
+      // Below for cloudinary deletion
+      let id = oldPic.split('/').pop().split('.')[0];
+      const { status, error } = await cloudDelete(id);
+      if (!status) {
+        console.log(error);
+        return res.status(500).json({ message: 'Failed to delete old image.' });
+      }
+    }
+  
+    // Using (multer-storage-cloudinary) i.e not pre-saving file to local disk
+    user.profilePic = req.file.path;
+    await user.save(); // Await the save operation
+  
+    const _user = excludeFields(user.toObject(), ["otp", "password", "__v"]);
+    return res.status(200).json({ message: 'Image uploaded successfully', user: _user });
   }),
 
 }
