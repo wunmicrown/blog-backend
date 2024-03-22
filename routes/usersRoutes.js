@@ -14,7 +14,7 @@ usersRouter.post("/reset-password", ValidatorMDW, userController.resetPassword);
 usersRouter.post("/change-password", userController.changePassword);
 usersRouter.post("/change-email", TOKEN_MIDDLEWARE, userController.changeEmail);
 
-usersRouter.post( "/create/uploads",TOKEN_MIDDLEWARE,multerCloudUploader.single("image"),
+usersRouter.post("/create/uploads", TOKEN_MIDDLEWARE, multerCloudUploader.single("image"),
     userController.uploadProfilePicture);
 
 

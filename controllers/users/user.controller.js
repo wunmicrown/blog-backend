@@ -8,6 +8,7 @@ const jwt = require("jsonwebtoken");
 const { sendOtpEmail } = require('../../utils/mails/mailsender');
 const { resetEmailOtp } = require('../../utils/mails/resetmailSender');
 const { changedEmailTemplate } = require('../../utils/otpTemplate');
+const { cloudDelete } = require('../../utils/cloudinary.utils');
 
 // global varibale for genarating OTP
 const generateSixDigitNumber = () => {

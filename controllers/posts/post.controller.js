@@ -1,6 +1,5 @@
 const asyncHandler = require("express-async-handler");
 const { excludeFields } = require("../../utils/common.methods");
-const { cloudDelete } = require("../../utils/cloudinary.utils");
 const User = require("../../model/user/user.model");
 const Post = require("../../model/post/post.model");
 const Category = require("../../model/category/category.model");
@@ -30,6 +29,7 @@ const postController ={
     title,
     content,
     category,
+    author: userFound?._id,
     imagecoverImgUrl: req.file.path,
   })
 console.log(postCreated)
