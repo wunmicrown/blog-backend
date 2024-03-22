@@ -82,18 +82,18 @@ console.log("postCreated",postCreated)
 
  //!list all posts
  fetchAllPosts: asyncHandler(async (req, res) => {
-  const { category, title, page = 1, limit = 300 } = req.query;
+  const { category_id, title, page = 1, limit = 300 } = req.query;
   //Basic filter
   let filter = {};
-  if (category) {
-    filter.category = category;
+  if ( category_id) {
+    filter. category_id =  category_id;
   }
   if (title) {
-    filter.description = { $regex: title, $options: "i" }; //case insensitive
+    filter.content = { $regex: title, $options: "i" }; //case insensitive
   }
 
   const posts = await Post.find(filter)
-    .populate("category")
+    .populate("category_id")
     .sort({ createdAt: -1 })
     .skip((page - 1) * limit)
     .limit(limit);
