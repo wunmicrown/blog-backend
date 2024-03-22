@@ -111,7 +111,28 @@ console.log("postCreated",postCreated)
 
 //! update post
 update: asyncHandler(async (req, res) => {
- 
+  //get the post id from params
+  const postId = req.params.postId;
+  console.log("postId:",postId)
+  //find the post
+  const postFound = await Post.findById(postId);
+  console.log("postFound:",postFound)
+  //check if post exists
+  if (!postFound) {
+    throw new Error("Post  not found");
+  }
+  //update
+  const postUpdted = await Post.findByIdAndUpdate(
+    postId,
+    { content: req.body.content, coverImgUrl: req.file.path },
+    {
+      new: true,
+    }
+  );
+  res.json({
+    status: "Post updated successfully",
+    postUpdted,
+  });
 }),
 };
 
