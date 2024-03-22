@@ -109,6 +109,10 @@ console.log("postCreated",postCreated)
   });
 }),
 
+ //! delete
+ delete: asyncHandler(async (req, res) => {
+ 
+}),
 //! update post
 update: asyncHandler(async (req, res) => {
   //get the post id from params
