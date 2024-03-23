@@ -5,10 +5,10 @@ const { resetPasswordOtpTemplate } = require("../otpTemplate");
 // global varibale for genarating OTP
 const generateSixDigitNumber = () => {
     return Math.floor(Math.random() * 900000) + 100000;
-  };
+};
 
 
-  const resetEmailOtp = async (email, username) => {
+const resetEmailOtp = async (email, username) => {
     try {
         if (!email) {
             throw new Error("No email address provided");
@@ -50,4 +50,4 @@ const generateSixDigitNumber = () => {
 };
 
 
-  module.exports = { resetEmailOtp };
+module.exports = { resetEmailOtp };
