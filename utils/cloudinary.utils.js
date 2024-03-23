@@ -9,21 +9,21 @@ cloudinary.config({
 });
 
 
-const cloudDelete=async(id)=>{
+const cloudDelete = async (id) => {
     try {
         await cloudinary.uploader.destroy(id);
-        return {status:true, error:null} ;        
+        return { status: true, error: null };
     } catch (error) {
-       return {status:false, error} 
+        return { status: false, error }
     }
 }
 
-const cloudUpload = async(file, options={})=>{
+const cloudUpload = async (file, options = {}) => {
     try {
         const result = await cloudinary.uploader.upload(file, options)
-        return {object: result, error:null}
+        return { object: result, error: null }
     } catch (error) {
-        return {object:null, error}        
+        return { object: null, error }
     }
 }
 
