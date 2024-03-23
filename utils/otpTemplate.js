@@ -1,5 +1,5 @@
-const otpEmailTemplate=(username, otpGen)=>{
-    return `
+const otpEmailTemplate = (username, otpGen) => {
+  return `
     <!DOCTYPE html>
     <html lang="en">
     <head>
@@ -25,9 +25,9 @@ const otpEmailTemplate=(username, otpGen)=>{
     </body>
     </html>
     `
-  }
-  const resetPasswordOtpTemplate=(username, otpGen)=>{
-    return `
+}
+const resetPasswordOtpTemplate = (username, otpGen) => {
+  return `
     <!DOCTYPE html>
     <html lang="en">
     <head>
@@ -53,9 +53,9 @@ const otpEmailTemplate=(username, otpGen)=>{
     </body>
     </html>
     `
-  }
-  const changedEmailTemplate = (username, otp) => {
-    return `
+}
+const changedEmailTemplate = (username, otp) => {
+  return `
       <!DOCTYPE html>
       <html lang="en">
       <head>
@@ -80,10 +80,10 @@ const otpEmailTemplate=(username, otpGen)=>{
       </body>
       </html>
     `;
-  };
+};
 
-  module.exports = {
-    otpEmailTemplate,
-    resetPasswordOtpTemplate,
-    changedEmailTemplate
-  };
+module.exports = {
+  otpEmailTemplate,
+  resetPasswordOtpTemplate,
+  changedEmailTemplate
+};
