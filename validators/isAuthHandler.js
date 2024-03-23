@@ -1,5 +1,5 @@
 const {
-    registerPayloadValidator, 
+    registerPayloadValidator,
     loginPayLoadValidator,
     schemaValidatorHandler,
     resetPasswordlPayLoad
@@ -17,12 +17,8 @@ const authSchemaMapper = (path) => {
             return registerPayloadValidator
         case "/login":
             return loginPayLoadValidator
-            case "/reset-password":
-                return resetPasswordlPayLoad
-        // case "/resetEmail":
-        //     return resetEmailPayLoad
-        // default:
-        //     return wildCardValidator
+        case "/reset-password":
+            return resetPasswordlPayLoad
 
     }
 }
