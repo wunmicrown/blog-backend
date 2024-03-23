@@ -7,8 +7,10 @@ const postsRoutes = require('./routes/postsRoutes');
 const categoriesRoutes = require('./routes/categoriesRoutes');
 const commentRoutes = require('./routes/commentsRoutes');
 require("dotenv").config(); // load environment variables from .env file
+const cors = require('cors')
 let PORT = process.env.PORT || 4000;
 
+app.use(cors())
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 // Serve uploaded files statically from the 'uploads' directory
