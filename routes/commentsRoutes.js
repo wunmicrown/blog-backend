@@ -4,9 +4,9 @@ const commentsController = require('../controllers/comments/comment.controller')
 
 
 // Create instance of express router
-const commentRoutes=express.Router();
+const commentRoutes = express.Router();
 
 // ------Create comment------
 commentRoutes.post("/create-comment", TOKEN_MIDDLEWARE, commentsController.createComment)
 
-module.exports=commentRoutes;
+module.exports = commentRoutes;
