@@ -7,11 +7,7 @@ const categoriesRoutes = express.Router();
 
 //-----Create category----
 
-categoriesRoutes.post(
-"/create",
-TOKEN_MIDDLEWARE,
-categoryController.createCategory
-);
+categoriesRoutes.post("/create", TOKEN_MIDDLEWARE, categoryController.createCategory);
 
 //----lists all categories----
 categoriesRoutes.get("/", categoryController.fetchAllCategories);
@@ -24,7 +20,7 @@ categoriesRoutes.put("/:categoryId", TOKEN_MIDDLEWARE, categoryController.update
 categoriesRoutes.get("/:categoryId", categoryController.getCategory);
 
 //---delete category---
-categoriesRoutes.delete("/:categoryId",  TOKEN_MIDDLEWARE,  categoryController.delete );
+categoriesRoutes.delete("/:categoryId", TOKEN_MIDDLEWARE, categoryController.delete);
 
 //-----get all products of a category----
 module.exports = categoriesRoutes;
