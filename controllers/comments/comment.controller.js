@@ -1,5 +1,6 @@
 const asyncHandler = require("express-async-handler");
 const Post = require("../../model/post/post.model");
+const Comment = require("../../model/comments/comment.model");
 
 const commentsController = {
     // Create comments
