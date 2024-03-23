@@ -14,6 +14,6 @@ const excludeFields = (data, fields) => {
 };
 
 
-module.exports = { 
-    excludeFields 
+module.exports = {
+    excludeFields
 };
