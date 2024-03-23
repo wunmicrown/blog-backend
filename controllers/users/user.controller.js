@@ -17,7 +17,7 @@ const generateSixDigitNumber = () => {
 const transporter = nodemailer.createTransport({
   host: process.env.MAIL_HOST,
   port: process.env.MAIL_PORT,
-  secure: process.env.MAIL_USE_TLS , // Convert string to boolean
+  secure: process.env.MAIL_USE_TLS, // Convert string to boolean
   auth: {
     user: process.env.MAIL_USER,
     pass: process.env.MAIL_PASS,
@@ -301,7 +301,7 @@ const userController = {
     if (!req.file || Object.keys(req.file).length === 0) {
       return res.status(400).json({ message: 'No files were uploaded.' });
     }
-  
+
     const user = await User.findById(req.auth_id);
     console.log("User:", user);
     const oldPic = user.profilePic ?? null;
@@ -314,11 +314,11 @@ const userController = {
         return res.status(500).json({ message: 'Failed to delete old image.' });
       }
     }
-  
+
     // Using (multer-storage-cloudinary) i.e not pre-saving file to local disk
     user.profilePic = req.file.path;
     await user.save(); // Await the save operation
-  
+
     const _user = excludeFields(user.toObject(), ["otp", "password", "__v"]);
     return res.status(200).json({ message: 'Image uploaded successfully', user: _user });
   }),
