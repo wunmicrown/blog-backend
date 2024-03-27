@@ -125,24 +125,30 @@ const userController = {
     console.log("email:", email, "otp:", otp);
     try {
       // Find the user by email
-      const userDetails = await User.findOne({ email, otp });
-      console.log(userDetails)
-      // Check if user exists and OTP is correct
-      if (!userDetails || !otp) {
+      const userDetails = await User.findOne({ email});
+      
+      // Check if user exists
+      if (!userDetails) {
+        return res.status(400).json({ message: "Email not found", status: false });
+      }
+  
+      // Check if OTP matches
+      if (userDetails.otp !== otp) {
         return res.status(400).json({ message: "Invalid OTP", status: false });
       }
-
+  
       // Mark email as verified
       userDetails.isEmailVerified = true;
       const savedUser = await userDetails.save();
       console.log(savedUser);
-
+  
       return res.status(200).json({ message: "Email successfully verified", status: true });
     } catch (error) {
       console.error("Error verifying email:", error);
       return res.status(500).json({ message: "Internal server error", status: false });
     }
   }),
+  
 
   // !ResetEmail
   /**

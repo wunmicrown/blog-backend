@@ -106,6 +106,7 @@ const postController = {
       currentPage: page,
       perPage: limit,
       totalPages: Math.ceil(totalPosts / limit),
+      // author: userFound.username,
     });
   }),
 
