@@ -119,35 +119,27 @@ const userController = {
    * @param {Object} res - The response object to send back to the client.
    * @returns {Promise<void>} - A promise that resolves once the OTP verification process is complete.
    */
-  // Backend code to handle OTP verification
-  verifyEmail: asyncHandler(async (req, res) => {
-    const { email, otp } = req.body;
-    console.log("email:", email, "otp:", otp);
-    try {
-      // Find the user by email
-      const userDetails = await User.findOne({ email});
-      
-      // Check if user exists
-      if (!userDetails) {
-        return res.status(400).json({ message: "Email not found", status: false });
-      }
-  
-      // Check if OTP matches
-      if (userDetails.otp !== otp) {
-        return res.status(400).json({ message: "Invalid OTP", status: false });
-      }
-  
-      // Mark email as verified
-      userDetails.isEmailVerified = true;
-      const savedUser = await userDetails.save();
-      console.log(savedUser);
-  
-      return res.status(200).json({ message: "Email successfully verified", status: true });
-    } catch (error) {
-      console.error("Error verifying email:", error);
-      return res.status(500).json({ message: "Internal server error", status: false });
+ // Backend code to handle OTP verification
+ verifyEmail :asyncHandler(async (req, res) => {
+  const { email, otp } = req.body;
+  console.log({ email, otp });
+  try {
+    // Find the user by email
+    let user = await User.findOne({ email });
+    console.log(user);
+    if (!user) {
+      return res.status(400).json({ message: "Invalid OTP" });
     }
-  }),
+    // If OTP is correct, mark email as verified
+    user.isEmailVerified = true;
+    user = await user.save();
+    user = excludeFields(user.toObject(), ["password", "otp"])
+    return res.status(200).json({ message: "Email successfully verified", user });
+  } catch (error) {
+    console.error("Error verifying email:", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+}),
   
 
   // !ResetEmail
