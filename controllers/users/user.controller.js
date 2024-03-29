@@ -320,7 +320,33 @@ const userController = {
     const _user = excludeFields(user.toObject(), ["otp", "password", "__v"]);
     return res.status(200).json({ message: 'Image uploaded successfully', user: _user });
   }),
+  /**
+ * Fetches user details based on the authenticated user's ID.
+ * 
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ * @returns {void}
+ */
+getUserDetails :asyncHandler (async (req, res) => {
+  try {
 
+    // req.auth_id from middle ware
+    // Retrieve user details from the database based on the authenticated user's ID
+    const userId = req.auth_id; // Assuming you're storing the user ID in the JWT payload
+    // console.log(userId);
+    const user = await User.findById(userId).select('-password -otp -__v');
+    // console.log({user});   
+    // Check if user exists
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    // user = excludeFields(user.toObject(), ['password', 'otp', "__v"]);
+    return res.status(200).json(user);
+  } catch (error) {
+    console.error("Error fetching user details:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+}),
 }
 
 

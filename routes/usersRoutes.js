@@ -13,6 +13,8 @@ usersRouter.post("/reset-email", userController.resetEmail);
 usersRouter.post("/reset-password",  userController.resetPassword);
 usersRouter.post("/change-password", userController.changePassword);
 usersRouter.post("/change-email", TOKEN_MIDDLEWARE, userController.changeEmail);
+usersRouter.get('/getUser',  getUserDetails);
+
 
 usersRouter.post("/create/uploads", TOKEN_MIDDLEWARE, multerCloudUploader.single("image"),
     userController.uploadProfilePicture);
