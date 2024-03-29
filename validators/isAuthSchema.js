@@ -29,9 +29,7 @@ const loginPayLoadValidator = Joi.object({
 
 // The payload object for resetPasswordPayload
 const resetPasswordlPayLoad = Joi.object({
-    // email: Joi.string().email().required(),
     newPassword: Joi.string().pattern(new RegExp('^[a-zA-Z0-9]{8,}$')).required(),
-    password: Joi.string().pattern(new RegExp('^[a-zA-Z0-9]{8,}$')).required(),
     confirmPassword: Joi.string().pattern(new RegExp('^[a-zA-Z0-9]{8,}$')).required(),
     termsAccepted: Joi.boolean().required(),
 });
