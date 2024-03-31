@@ -80,6 +80,28 @@ const postController = {
     });
   }),
 
+   // Fetch post details by postId
+   fetchPostDetails: asyncHandler(async (req, res) => {
+    try {
+      const { postId } = req.params;
+      let post = await Post.findById(postId).populate("author").populate("category_id");
+      
+      // Check if post exists
+      if (!post) {
+        return res.status(404).json({ message: "Post not found" });
+      }
+
+      // Exclude sensitive fields from the author object
+      post.author = excludeFields(post.author.toObject(), ["otp", "password", "__v"]);
+
+      // Send the response with modified post object
+      res.status(200).json({ post });
+    } catch (error) {
+      console.error("Error fetching post details:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  }),
+
   //!list all posts
   fetchAllPosts: asyncHandler(async (req, res) => {
     const { category_id, title, page = 1, limit = 300 } = req.query;

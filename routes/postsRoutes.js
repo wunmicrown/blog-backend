@@ -15,8 +15,11 @@ postsRoutes.post("/create", TOKEN_MIDDLEWARE, multerCloudUploader.single("image"
 //----lists all posts----
 postsRoutes.get("/", postController.fetchAllPosts);
 
+// Fetch post details by postId
+postsRoutes.get("/:postId", postController.fetchPostDetails); 
+
 // ---delete post---
-postsRoutes.delete("/:postId", TOKEN_MIDDLEWARE, postController.delete);
+postsRoutes.put("/:postId", TOKEN_MIDDLEWARE, postController.delete);
 
 
 //----update post----

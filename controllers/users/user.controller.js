@@ -333,9 +333,9 @@ getUserDetails :asyncHandler (async (req, res) => {
     // req.auth_id from middle ware
     // Retrieve user details from the database based on the authenticated user's ID
     const userId = req.auth_id; // Assuming you're storing the user ID in the JWT payload
-    // console.log(userId);
+    console.log(userId);  
     const user = await User.findById(userId).select('-password -otp -__v');
-    // console.log({user});   
+    console.log({user});   
     // Check if user exists
     if (!user) {
       return res.status(404).json({ message: "User not found" });
