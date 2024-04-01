@@ -32,7 +32,7 @@ const categoryController = {
     });
   }),
   //! get a post
-  getCategory: asyncHandler(async (req, res) => {
+   getCategory: asyncHandler(async (req, res) => {
     //get the category id from params
     const categoryId = req.params.categoryId;
     //find the category

@@ -203,6 +203,7 @@ const postController = {
     const postId = req.params.postId;
     //user liking a post
     const userId = req.auth_id;
+    console.log(userId)
     //Find the post
     const post = await Post.findById(postId);
     //Check if a user has already liked the post
@@ -217,6 +218,7 @@ const postController = {
     }
     //resave the post
     await post.save();
+    console.log(post.save())
     //send the response
     res.json({
       message: "Post Disliked",
