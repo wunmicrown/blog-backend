@@ -16,22 +16,21 @@ const commentsController = {
             throw new Error("Post not found");
         }
         // Find the user
-        const user = await User.findById(req.auth_id); // Assuming req.auth_id contains the user's ObjectId
+        const user = await User.findById(req.auth_id); 
         console.log("user",{ user });
         if (!user) {
             throw new Error("User not found");
         }
-        // Create the comment with author's name
-       // Create the comment with author's name
+       
 const commentCreated = await Comment.create({
     content,
-    author: user.username, // Store author's username directly
+    author: user.username,
     postId
 });
 
 
         // Push the comment to the post
-        post.comments.push(commentCreated._id); // Use commentCreated._id directly
+        post.comments.push(commentCreated._id); 
         await post.save();
 
         // Send the response
