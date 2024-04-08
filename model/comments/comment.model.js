@@ -3,8 +3,7 @@ const Schema = mongoose.Schema;
 
 const CommentSchema = new Schema({
   author: {
-    type: Schema.Types.ObjectId,
-    ref: "User",
+    type: String, // Change type to String to store username directly
     required: true,
   },
   content: {

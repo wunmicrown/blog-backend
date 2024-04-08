@@ -127,9 +127,9 @@ const userController = {
     // Find the user by email
     let user = await User.findOne({ email });
     console.log(user);
-    if (!user) {
-      return res.status(400).json({ message: "Invalid OTP" });
-    }
+    // if (!user) {
+    //   return res.status(400).json({ message: "Invalid OTP" });
+    // }
     // If OTP is correct, mark email as verified
     user.isEmailVerified = true;
     user = await user.save();
