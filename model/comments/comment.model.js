@@ -3,8 +3,12 @@ const Schema = mongoose.Schema;
 
 const CommentSchema = new Schema({
   author: {
-    type: String, // Change type to String to store username directly
+    type: String,
     required: true,
+  },
+  authorAvatar: {
+    type: String,
+    required: false
   },
   content: {
     type: String,

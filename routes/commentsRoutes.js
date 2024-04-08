@@ -8,5 +8,7 @@ const commentRoutes = express.Router();
 
 // ------Create comment------
 commentRoutes.post("/create-comment", TOKEN_MIDDLEWARE, commentsController.createComment)
+// ----Get comments  for a specific post----
+commentRoutes.get("/get-comments/:postId", commentsController.getComments);
 
 module.exports = commentRoutes;
