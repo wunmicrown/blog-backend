@@ -11,4 +11,8 @@ commentRoutes.post("/create-comment", TOKEN_MIDDLEWARE, commentsController.creat
 // ----Get comments  for a specific post----
 commentRoutes.get("/get-comments/:postId", commentsController.getComments);
 
+// ----Delete comment by ID----
+commentRoutes.delete("/delete-comment/:commentId", TOKEN_MIDDLEWARE, commentsController.deleteComment);
+
+
 module.exports = commentRoutes;
