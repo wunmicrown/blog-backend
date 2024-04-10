@@ -12,6 +12,8 @@ const postSchema = new Schema(
       required: true,
     },
     published: { type: Boolean },
+    draft: { type: Boolean, default: false }, 
+
     category_id: { type: Schema.Types.ObjectId, ref: "Category" },
 
     // Interactions

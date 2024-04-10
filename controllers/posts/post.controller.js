@@ -79,6 +79,7 @@ const postController = {
       // author: userFound.username,
     });
   }),
+  
 
    // Fetch post details by postId
    fetchPostDetails: asyncHandler(async (req, res) => {
