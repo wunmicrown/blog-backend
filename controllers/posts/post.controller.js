@@ -8,79 +8,65 @@ require('fs').promises;
 
 const postController = {
 
-  //!Create post
-  createPost: asyncHandler(async (req, res) => {
-    //get the payload
-    const { title, content, category } = req.body;
-    console.log("title:", title, "content:", content, "category:", category);
-    // find the category
-    const categoryFound = await Category.findById(category);
-    if (!categoryFound) {
-      throw new Error("Category not found");
+  // Create post
+createPost: asyncHandler(async (req, res) => {
+  // Get the payload
+  const { title, content, category } = req.body;
+console.log(req.body);
+  // Find the category
+  const categoryFound = await Category.findById(category);
+  if (!categoryFound) {
+    throw new Error("Category not found");
+  }
+
+  // Find the user
+  const userFound = await User.findById(req.auth_id);
+  if (!userFound) {
+    throw new Error("User not found");
+  }
+
+  // Check if an image file is uploaded
+  let coverImgUrl;
+  if (req.file && req.file.path) {
+    // Use Cloudinary uploader to upload the image to the cloud
+    const uploadResult = await cloudUpload(req.file.path);
+    if (uploadResult.object && uploadResult.object.secure_url) {
+      // If upload was successful, use the secure URL of the uploaded image
+      coverImgUrl = uploadResult.object.secure_url;
+    } else {
+      // If upload failed, handle the error
+      throw new Error('Failed to upload image to Cloudinary');
     }
-    //  // find the user
-    const userFound = await User.findById(req.auth_id);
-    console.log("userFound:", userFound);
-    if (!userFound) {
-      throw new Error("User not found");
-    }
+  }
 
-    // Check if the user already has a cover image
-    let oldCoverImgUrl = null;
-    if (userFound.coverImgUrl) {
-      oldCoverImgUrl = userFound.coverImgUrl;
+  // Create the post with timestamp
+  const postCreated = await Post.create({
+    title,
+    content,
+    category,
+    author: req.auth_id,
+    coverImgUrl,
+    createdAt: new Date()
+  });
 
-      // Below for cloudinary deletion of old cover image
-      let id = oldCoverImgUrl.split("/").pop().split(".")[0];
-      const { status, error } = await cloudDelete(id);
-      if (!status) {
-        console.log(error);
-        return res.status(500).json({ message: "Failed to delete old cover image." });
-      }
-    }
+  // Push the post ID into the category's posts array
+  categoryFound.posts.push(postCreated._id);
+  await categoryFound.save();
 
-    // Check if an image file is uploaded
-    let coverImgUrl;
-    if (req.file && req.file.path) {
-      // Use Cloudinary uploader to upload the image to the cloud
-      const uploadResult = await cloudUpload(req.file.path);
-      if (uploadResult.object && uploadResult.object.secure_url) {
-        // If upload was successful, use the secure URL of the uploaded image
-        coverImgUrl = uploadResult.object.secure_url;
-      } else {
-        // If upload failed, handle the error
-        throw new Error('Failed to upload image to Cloudinary');
-      }
-    }
+  // Push the post ID into the user's posts array
+  userFound.posts.push(postCreated._id);
+  userFound.updateAccountType();
+  await userFound.save();
 
-    // create the post
-    const postCreated = await Post.create({
-      title,
-      content,
-      category,
-      author: req.auth_id,
-      coverImgUrl,
-    })
-    console.log("postCreated", postCreated)
-    // the post was pushed into category
-    categoryFound.posts.push(categoryFound?._id);
-    console.log("categoryFound", categoryFound.posts.push(categoryFound?._id))
-    //resave the category
-    await categoryFound.save();
-    //push the posts into user
-    userFound.posts.push(postCreated?._id);
-    //Update the user account type
-    userFound.updateAccountType();
-    //save the user
-    await userFound.save();
-    //send the post to the client
-    return res.status(200).json({
-      status: "success", message: 'Post created successfully', post: postCreated,
-      // author: userFound.username,
-    });
-  }),
-  
+  // Send the post data along with timestamp to the client
+  return res.status(200).json({
+    status: "success",
+    message: 'Post created successfully',
+    post: postCreated
+  });
+}),
 
+ 
    // Fetch post details by postId
    fetchPostDetails: asyncHandler(async (req, res) => {
     try {

@@ -25,7 +25,7 @@ const postSchema = new Schema(
     commentsCount: { type: Number, default: 0 } // New field for comment count
 
   },
-  { timestamp: true }
+  { timestamps: true }
 );
 
 //model
