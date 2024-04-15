@@ -27,5 +27,8 @@
     "nodemon": "^3.1.0",
     "otp-generator": "^4.0.1",
     "passport": "^0.7.0"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0"
   }
 }
