@@ -54,7 +54,7 @@ const commentsController = {
                 status: "success",
                 message: "Comments retrieved successfully",
                 comments: post.comments,
-                commentsCount: post.commentsCount // Include t  he comment count in the response
+                commentsCount: post.commentsCount // Include the comment count in the response
             });
         } catch (error) {
             console.error('Error retrieving comments:', error);
