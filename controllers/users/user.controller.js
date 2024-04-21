@@ -73,14 +73,14 @@ const userController = {
     console.log({ email, password });
     // Find the user by email
     const user = await User.findOne({ email });
-    console.log(user);
-    const _user = excludeFields(user.toObject(), ['password', 'otp', "__v"]);
-    console.log(_user);
     // Check if user exists
     if (!user) {
       console.log("User not found");
       return res.status(404).json({ message: "Invalid credentials", status: false });
     }
+    console.log(user);
+    const _user = excludeFields(user.toObject(), ['password', 'otp', "__v"]);
+    console.log(_user);
 
     // Check if the email is verified
     if (!user.isEmailVerified) {
@@ -119,28 +119,28 @@ const userController = {
    * @param {Object} res - The response object to send back to the client.
    * @returns {Promise<void>} - A promise that resolves once the OTP verification process is complete.
    */
- // Backend code to handle OTP verification
- verifyEmail :asyncHandler(async (req, res) => {
-  const { email, otp } = req.body;
-  console.log({ email, otp });
-  try {
-    // Find the user by email
-    let user = await User.findOne({ email });
-    console.log(user);
-    // if (!user) {
-    //   return res.status(400).json({ message: "Invalid OTP" });
-    // }
-    // If OTP is correct, mark email as verified
-    user.isEmailVerified = true;
-    user = await user.save();
-    user = excludeFields(user.toObject(), ["password", "otp"])
-    return res.status(200).json({ message: "Email successfully verified", user });
-  } catch (error) {
-    console.error("Error verifying email:", error);
-    return res.status(500).json({ message: "Internal server error" });
-  }
-}),
-  
+  // Backend code to handle OTP verification
+  verifyEmail: asyncHandler(async (req, res) => {
+    const { email, otp } = req.body;
+    console.log({ email, otp });
+    try {
+      // Find the user by email
+      let user = await User.findOne({ email });
+      console.log(user);
+      // if (!user) {
+      //   return res.status(400).json({ message: "Invalid OTP" });
+      // }
+      // If OTP is correct, mark email as verified
+      user.isEmailVerified = true;
+      user = await user.save();
+      user = excludeFields(user.toObject(), ["password", "otp"])
+      return res.status(200).json({ message: "Email successfully verified", user });
+    } catch (error) {
+      console.error("Error verifying email:", error);
+      return res.status(500).json({ message: "Internal server error" });
+    }
+  }),
+
 
   // !ResetEmail
   /**
@@ -248,8 +248,17 @@ const userController = {
 
   changeEmail: asyncHandler(async (req, res) => {
     try {
-      const { email } = req.body;
+      const { email, password } = req.body;
       const userId = req.auth_id; // Extract user ID from authenticated request
+      console.log(email, password)
+      // Fetch user data
+      const user = await User.findById(userId);
+
+      // Check if passwords match
+      // const match = await bcrypt.compare(password, user.password);
+      // if (!match) {
+      //   return res.status(401).send({ message: "Invalid credentials" });
+      // }
 
       // Check if the new email is already in use
       const existingUser = await User.findOne({ email });
@@ -259,9 +268,6 @@ const userController = {
 
       // Generate OTP
       const otp = generateSixDigitNumber(); // You need to implement this function
-
-      // Fetch user data
-      const user = await User.findById(userId);
 
       // Send OTP to the new email address 
       const mailOptions = {
@@ -282,11 +288,9 @@ const userController = {
       });
 
       // Save the OTP in the user's document in the database
-      const updatedUser = await User.findByIdAndUpdate(userId, { email, otp }, { new: true });
-
-      if (!updatedUser) {
-        return res.status(404).json({ message: 'User not found' });
-      }
+      user.otp = otp;
+      user.email = email;
+      await user.save();
 
       res.json({ status: true, message: 'OTP sent to your email address for verification' });
     } catch (error) {
@@ -327,26 +331,26 @@ const userController = {
  * @param {Object} res - The response object.
  * @returns {void}
  */
-getUserDetails :asyncHandler (async (req, res) => {
-  try {
+  getUserDetails: asyncHandler(async (req, res) => {
+    try {
 
-    // req.auth_id from middle ware
-    // Retrieve user details from the database based on the authenticated user's ID
-    const userId = req.auth_id; // Assuming you're storing the user ID in the JWT payload
-    console.log(userId);  
-    const user = await User.findById(userId).select('-password -otp -__v');
-    console.log({user});   
-    // Check if user exists
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
+      // req.auth_id from middle ware
+      // Retrieve user details from the database based on the authenticated user's ID
+      const userId = req.auth_id; // Assuming you're storing the user ID in the JWT payload
+      console.log(userId);
+      const user = await User.findById(userId).select('-password -otp -__v');
+      console.log({ user });
+      // Check if user exists
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      // user = excludeFields(user.toObject(), ['password', 'otp', "__v"]);
+      return res.status(200).json(user);
+    } catch (error) {
+      console.error("Error fetching user details:", error);
+      res.status(500).json({ message: "Internal server error" });
     }
-    // user = excludeFields(user.toObject(), ['password', 'otp', "__v"]);
-    return res.status(200).json(user);
-  } catch (error) {
-    console.error("Error fetching user details:", error);
-    res.status(500).json({ message: "Internal server error" });
-  }
-}),
+  }),
 }
 
 

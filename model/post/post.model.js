@@ -1,5 +1,18 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
+require('dotenv').config()
+const bcrypt = require('bcrypt')
+
+const URI = process.env.MONGODB_URI
+console.log(URI);
+mongoose.connect(URI)
+    .then(() => {
+        console.log(`connected to database sucessfully`);
+    }).catch((err) => {
+        console.log(`error while connecting to database ${err}`);
+    })
+
+
 
 const postSchema = new Schema(
   {

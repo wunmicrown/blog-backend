@@ -2,14 +2,14 @@ const mongoose = require('mongoose')
 require('dotenv').config()
 const bcrypt = require('bcrypt')
 
-const URI = process.env.MONGODB_URI
-console.log(URI);
-mongoose.connect(URI)
-    .then(() => {
-        console.log(`connected to database sucessfully`);
-    }).catch((err) => {
-        console.log(`error while connecting to database ${err}`);
-    })
+// const URI = process.env.TEST_MONGODB_URI
+// console.log(URI);
+// mongoose.connect(URI)
+//     .then(() => {
+//         console.log(`connected to database sucessfully`);
+//     }).catch((err) => {
+//         console.log(`error while connecting to database ${err}`);
+//     })
 
 let userSchema = new mongoose.Schema(
     {
