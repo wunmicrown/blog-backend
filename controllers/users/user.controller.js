@@ -94,10 +94,10 @@ const userController = {
     // console.log("bcrypt.compare result:", match);
 
     // Check if passwords match
-    // if (!match) {
-    //   console.log("Incorrect password");
-    //   return res.status(401).send({ message: "Invalid credentials", status: false });
-    // }
+    if (!match) {
+      console.log("Incorrect password");
+      return res.status(401).send({ message: "Invalid credentials", status: false });
+    }
 
     // Password is correct, generate JWT token for authentication
     const token = jwt.sign({ email }, process.env.JWT_SECRET);
