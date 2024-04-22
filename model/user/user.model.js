@@ -36,6 +36,28 @@ let userSchema = new mongoose.Schema(
             type: Number,
             required: false
         },
+        userType: {
+            type: String,
+            default: "User",
+            enum: ["User", "Admin"],
+        },
+
+        isActive: {
+            type: Boolean,
+            default: true
+        },
+        isBlocked: {
+            type: Boolean,
+            default: false
+        },
+        createdAt: {
+            type: Date,
+            default: Date.now
+        },
+        updatedAt: {
+            type: Date,
+            default: Date.now
+        },
         profilePic: {
             type: String,
             default: null

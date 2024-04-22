@@ -75,7 +75,7 @@ console.log(req.body);
       let post = await Post.findById(postId)
         .populate("author")
         .populate("category_id")
-        .select(+{ timestamp: true }); // Include createdAt and updatedAt fields
+        .select(+{ timestamp: true }); 
   
       // Check if post exists
       if (!post) {

@@ -255,10 +255,10 @@ const userController = {
       const user = await User.findById(userId);
 
       // Check if passwords match
-      // const match = await bcrypt.compare(password, user.password);
-      // if (!match) {
-      //   return res.status(401).send({ message: "Invalid credentials" });
-      // }
+      const match = await bcrypt.compare(password, user.password);
+      if (!match) {
+        return res.status(401).send({ message: "Invalid credentials" });
+      }
 
       // Check if the new email is already in use
       const existingUser = await User.findOne({ email });

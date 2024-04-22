@@ -1,18 +1,15 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
-require('dotenv').config()
-const bcrypt = require('bcrypt')
+require('dotenv').config();
 
-const URI = process.env.MONGODB_URI
-console.log(URI);
+const URI = process.env.MONGODB_URI;
+
 mongoose.connect(URI)
     .then(() => {
-        console.log(`connected to database sucessfully`);
+        console.log(`Connected to database successfully`);
     }).catch((err) => {
-        console.log(`error while connecting to database ${err}`);
-    })
-
-
+        console.log(`Error while connecting to database ${err}`);
+    });
 
 const postSchema = new Schema(
   {
@@ -35,12 +32,13 @@ const postSchema = new Schema(
     viewers: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
     // Comments
     comments: [{ type: Schema.Types.ObjectId, ref: "Comment" }],
-    commentsCount: { type: Number, default: 0 } // New field for comment count
+    commentsCount: { type: Number, default: 0 }, 
 
+    tags: [{ type:String, ref: "Tag" }] 
   },
   { timestamps: true }
 );
 
-//model
+// Model
 let Post = mongoose.model("Post", postSchema);
 module.exports = Post;
