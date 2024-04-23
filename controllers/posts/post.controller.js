@@ -9,62 +9,124 @@ require('fs').promises;
 const postController = {
 
   // Create post
-createPost: asyncHandler(async (req, res) => {
-  // Get the payload
-  const { title, content, category } = req.body;
-console.log(req.body);
-  // Find the category
-  const categoryFound = await Category.findById(category);
-  if (!categoryFound) {
-    throw new Error("Category not found");
-  }
-
-  // Find the user
-  const userFound = await User.findById(req.auth_id);
-  if (!userFound) {
-    throw new Error("User not found");
-  }
-
-  // Check if an image file is uploaded
-  let coverImgUrl;
-  if (req.file && req.file.path) {
-    // Use Cloudinary uploader to upload the image to the cloud
-    const uploadResult = await cloudUpload(req.file.path);
-    if (uploadResult.object && uploadResult.object.secure_url) {
-      // If upload was successful, use the secure URL of the uploaded image
-      coverImgUrl = uploadResult.object.secure_url;
-    } else {
-      // If upload failed, handle the error
-      throw new Error('Failed to upload image to Cloudinary');
+  createPost: asyncHandler(async (req, res) => {
+    // Get the payload
+    const { title, content, category, tags } = req.body;
+  
+    // Find the category
+    const categoryFound = await Category.findById(category);
+    if (!categoryFound) {
+      throw new Error("Category not found");
     }
-  }
+  
+    // Find the user
+    const userFound = await User.findById(req.auth_id);
+    if (!userFound) {
+      throw new Error("User not found");
+    }
+  
+    // Check if an image file is uploaded
+    let coverImgUrl;
+    if (req.file && req.file.path) {
+      // Use Cloudinary uploader to upload the image to the cloud
+      const uploadResult = await cloudUpload(req.file.path);
+      if (uploadResult.object && uploadResult.object.secure_url) {
+        // If upload was successful, use the secure URL of the uploaded image
+        coverImgUrl = uploadResult.object.secure_url;
+      } else {
+        // If upload failed, handle the error
+        throw new Error('Failed to upload image to Cloudinary');
+      }
+    }
+    const tagsArray = tags.split(',');
+  
+    // Create the post with timestamp and draft set to false
+    const postCreated = await Post.create({
+      title,
+      content,
+      category,
+      author: req.auth_id,
+      coverImgUrl,
+      createdAt: new Date(),
+      tags: tagsArray,
+      draft: false, // Set draft to false
+    });
+  
+    // Push the post ID into the category's posts array
+    categoryFound.posts.push(postCreated._id);
+    await categoryFound.save();
+  
+    // Push the post ID into the user's posts array
+    userFound.posts.push(postCreated._id);
+    userFound.updateAccountType();
+    await userFound.save();
+  
+    // Send the post data along with timestamp to the client
+    return res.status(200).json({
+      status: "success",
+      message: 'Post created successfully',
+      post: postCreated
+    });
+  }),
 
-  // Create the post with timestamp
-  const postCreated = await Post.create({
-    title,
-    content,
-    category,
-    author: req.auth_id,
-    coverImgUrl,
-    createdAt: new Date()
-  });
+// createPost: asyncHandler(async (req, res) => {
+//   // Get the payload
+//   const { title, content, category,tags } = req.body;
+// console.log(req.body);
+//   // Find the category
+//   const categoryFound = await Category.findById(category);
+//   if (!categoryFound) {
+//     throw new Error("Category not found");
+//   }
 
-  // Push the post ID into the category's posts array
-  categoryFound.posts.push(postCreated._id);
-  await categoryFound.save();
+//   // Find the user
+//   const userFound = await User.findById(req.auth_id);
+//   if (!userFound) {
+//     throw new Error("User not found");
+//   }
 
-  // Push the post ID into the user's posts array
-  userFound.posts.push(postCreated._id);
-  userFound.updateAccountType();
-  await userFound.save();
+//   // Check if an image file is uploaded
+//   let coverImgUrl;
+//   if (req.file && req.file.path) {
+//     // Use Cloudinary uploader to upload the image to the cloud
+//     const uploadResult = await cloudUpload(req.file.path);
+//     if (uploadResult.object && uploadResult.object.secure_url) {
+//       // If upload was successful, use the secure URL of the uploaded image
+//       coverImgUrl = uploadResult.object.secure_url;
+//     } else {
+//       // If upload failed, handle the error
+//       throw new Error('Failed to upload image to Cloudinary');
+//     }
+//   }
+//   const tagsArray = tags.split(',');
 
-  // Send the post data along with timestamp to the client
-  return res.status(200).json({
-    status: "success",
-    message: 'Post created successfully',
-    post: postCreated
-  });
-}),
+//   // Create the post with timestamp
+//   const postCreated = await Post.create({
+//     title,
+//     content,
+//     category,
+//     author: req.auth_id,
+//     coverImgUrl,
+//     createdAt: new Date(),
+//     tags: tagsArray
+//   });
+
+//   // Push the post ID into the category's posts array
+//   categoryFound.posts.push(postCreated._id);
+//   await categoryFound.save();
+
+//   // Push the post ID into the user's posts array
+//   userFound.posts.push(postCreated._id);
+//   userFound.updateAccountType();
+//   await userFound.save();
+
+//   // Send the post data along with timestamp to the client
+//   return res.status(200).json({
+//     status: "success",
+//     message: 'Post created successfully',
+//     post: postCreated
+//   });
+// }),
 
  
    // Fetch post details by postId

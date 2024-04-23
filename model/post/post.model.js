@@ -16,6 +16,7 @@ const postSchema = new Schema(
     title: { type: String, required: true, trim: true },
     coverImgUrl: { type: String },
     content: { type: String },
+    tags: [{ type:String }], 
     author: {
       type: Schema.Types.ObjectId,
       ref: "User",
@@ -34,7 +35,6 @@ const postSchema = new Schema(
     comments: [{ type: Schema.Types.ObjectId, ref: "Comment" }],
     commentsCount: { type: Number, default: 0 }, 
 
-    tags: [{ type:String, ref: "Tag" }] 
   },
   { timestamps: true }
 );
