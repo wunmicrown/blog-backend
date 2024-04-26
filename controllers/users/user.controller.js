@@ -144,10 +144,10 @@ const userController = {
   */
   resendOTP: asyncHandler(async (req, res) => {
     const { email } = req.body;
+    console.log("Email", { email })
     try {
       const user = await User.findOne({ email });
       const { username } = user;
-
       // Call the resendOtp function to send the OTP email
       const otpGen = await resendOtpEmail(email, username);
 
@@ -172,17 +172,16 @@ const userController = {
  */
   resetEmail: asyncHandler(async (req, res) => {
     const { email } = req.body;
-    console.log("email:", email)
     try {
       // Find the user by email
       const userEmail = await User.findOne({ email });
       console.log("userEmail:", userEmail);
+      const { username } = userEmail;
 
       if (userEmail) {
 
         await userEmail.save();
-        await resetEmailOtp(email);
-        console.log(resetEmailOtp(email));
+        await resetEmailOtp(email,username);
         // Send success response
         res.status(200).json({ message: 'OTP sent and user updated successfully', status: true });
       } else {

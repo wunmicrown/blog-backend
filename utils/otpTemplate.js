@@ -46,8 +46,6 @@ const resendOtpTemplate = (username, otpGen) => {
               </p>
               <h2>${otpGen}</h2>
 
-              <p>If you didn't request this OTP, please ignore this email.</p>
-
               <p>Thanks and kind regards.</p>
           </div>
       </body>
