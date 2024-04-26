@@ -34,7 +34,8 @@ let userSchema = new mongoose.Schema(
         },
         otp: {
             type: Number,
-            required: false
+            required: false,
+            unique: true
         },
         userType: {
             type: String,

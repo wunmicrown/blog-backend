@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 require('dotenv').config();
 
-const URI = process.env.MONGODB_URI;
+const URI = process.env.TEST_MONGODB_URI;
 
 mongoose.connect(URI)
     .then(() => {

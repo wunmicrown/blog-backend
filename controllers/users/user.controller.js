@@ -9,6 +9,7 @@ const { sendOtpEmail } = require('../../utils/mails/mailsender');
 const { resetEmailOtp } = require('../../utils/mails/resetmailSender');
 const { changedEmailTemplate } = require('../../utils/otpTemplate');
 const { cloudDelete } = require('../../utils/cloudinary.utils');
+const { resendOtpEmail } = require('../../utils/mails/resendOtpEmail');
 
 // global varibale for genarating OTP
 const generateSixDigitNumber = () => {
@@ -40,7 +41,7 @@ const userController = {
     const { username, email, password } = req.body;
     // console.log({ emailBody: email, username: username, password: password });
 
-    const userExists = await User.findOne({ username, email });
+    const userExists = await User.findOne({ email });
     if (userExists) {
       return res.status(409).send("User already exists");
     }
@@ -82,22 +83,14 @@ const userController = {
     const _user = excludeFields(user.toObject(), ['password', 'otp', "__v"]);
     console.log(_user);
 
-    // Check if the email is verified
-    if (!user.isEmailVerified) {
-      return res.status(403).json({ message: "Email not verified. Please verify your email to log in.", status: false });
-    }
 
     // Log the plaintext password and the hashed password retrieved from the database
-    // const match = await bcrypt.compare(password, user.password);
-    // console.log("Plaintext password:", password);
-    // console.log("Hashed password from database:", user.password);
-    // console.log("bcrypt.compare result:", match);
-
+    const match = await bcrypt.compare(password, user.password);
     // Check if passwords match
-    // if (!match) {
-    //   console.log("Incorrect password");
-    //   return res.status(401).send({ message: "Invalid credentials", status: false });
-    // }
+    if (!match) {
+      // console.log("Incorrect password");
+      return res.status(401).send({ message: "Invalid credentials", status: false });
+    }
 
     // Password is correct, generate JWT token for authentication
     const token = jwt.sign({ email }, process.env.JWT_SECRET);
@@ -125,11 +118,11 @@ const userController = {
     console.log({ email, otp });
     try {
       // Find the user by email
-      let user = await User.findOne({ email });
+      let user = await User.findOne({ otp, email });
       console.log(user);
-      // if (!user) {
-      //   return res.status(400).json({ message: "Invalid OTP" });
-      // }
+      if (!user) {
+        return res.status(400).json({ message: "Invalid OTP" });
+      }
       // If OTP is correct, mark email as verified
       user.isEmailVerified = true;
       user = await user.save();
@@ -140,6 +133,33 @@ const userController = {
       return res.status(500).json({ message: "Internal server error" });
     }
   }),
+
+
+  /**
+  * Controller function to resend OTP (One-Time Password) to the user's email address.
+  * 
+  * @param {Object} req - The request object containing the user's email in the body.
+  * @param {Object} res - The response object to send back to the client.
+  * @returns {Promise<void>} - A promise that resolves once the OTP resend process is complete.
+  */
+  resendOTP: asyncHandler(async (req, res) => {
+    const { email } = req.body;
+    try {
+      const user = await User.findOne({ email });
+      const { username } = user;
+
+      // Call the resendOtp function to send the OTP email
+      const otpGen = await resendOtpEmail(email, username);
+
+      return res.status(200).json({ message: 'New OTP sent successfully', otpGen });
+    } catch (error) {
+      console.error('Error resending OTP:', error);
+      return res.status(500).json({ message: 'Internal server error' });
+    }
+  }),
+
+
+
 
 
   // !ResetEmail
