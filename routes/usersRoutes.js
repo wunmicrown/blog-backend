@@ -5,8 +5,9 @@ const { TOKEN_MIDDLEWARE } = require("../middleWares/authenticateToken");
 const { multerCloudUploader } = require("../middleWares/multerUpload");
 
 const usersRouter = express.Router();
-
-usersRouter.post("/register", ValidatorMDW, userController.register);
+ValidatorMDW
+// usersRouter.post("/register", ValidatorMDW, userController.register);
+usersRouter.post("/register",  userController.register);
 usersRouter.post("/login", ValidatorMDW, userController.login);
 usersRouter.post("/verify-email", userController.verifyEmail);
 usersRouter.post("/resend-otp", userController.resendOTP);

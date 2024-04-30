@@ -25,7 +25,7 @@ const postSchema = new Schema(
     published: { type: Boolean },
     draft: { type: Boolean, default: false }, 
 
-    category_id: { type: Schema.Types.ObjectId, ref: "Category" },
+    category_id: { type: Schema.Types.ObjectId, ref: "Category", key:"" },
 
     // Interactions
     likes: [{ type: Schema.Types.ObjectId, ref: "User" }],

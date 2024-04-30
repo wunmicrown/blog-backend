@@ -38,8 +38,8 @@ const userController = {
  */
   register: asyncHandler(async (req, res) => {
 
-    const { username, email, password } = req.body;
-    // console.log({ emailBody: email, username: username, password: password });
+    const { username, email, password, userType } = req.body;
+    // console.log({ emailBody: email, username: username, password: password ,userType:userType});
 
     const userExists = await User.findOne({ email });
     if (userExists) {
@@ -51,7 +51,9 @@ const userController = {
     console.log("password:", hashedPassword);
 
 
-    const newUser = new User(req.body);
+    // const newUser = new User(req.body);
+    const newUser = new User({ username, email, password: hashedPassword, userType });
+
     const _user = excludeFields(newUser.toObject(), ['password', 'otp', "__v"]);
     console.log("newUser:", newUser);
     await newUser.save();
@@ -74,6 +76,7 @@ const userController = {
     console.log({ email, password });
     // Find the user by email
     const user = await User.findOne({ email });
+    console.log(user)
     // Check if user exists
     if (!user) {
       console.log("User not found");
@@ -82,14 +85,14 @@ const userController = {
     console.log(user);
     const _user = excludeFields(user.toObject(), ['password', 'otp', "__v"]);
     console.log(_user);
-
-
+    
     // Log the plaintext password and the hashed password retrieved from the database
     const match = await bcrypt.compare(password, user.password);
+    console.log("Match", match)
     // Check if passwords match
     if (!match) {
       // console.log("Incorrect password");
-      return res.status(401).send({ message: "Invalid credentials", status: false });
+      return res.status(404).send({ message: "Invalid credentials", status: false });
     }
 
     // Password is correct, generate JWT token for authentication
@@ -181,7 +184,7 @@ const userController = {
       if (userEmail) {
 
         await userEmail.save();
-        await resetEmailOtp(email,username);
+        await resetEmailOtp(email, username);
         // Send success response
         res.status(200).json({ message: 'OTP sent and user updated successfully', status: true });
       } else {

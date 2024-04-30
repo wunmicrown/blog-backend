@@ -15,6 +15,10 @@ const registerPayloadValidator = Joi.object({
     email: Joi.string().
         email().
         required(),
+    userType: Joi.string()
+        .valid("User", "Admin")
+        .required(),
+
 })
 /** The Validator for user login payload */
 const loginPayLoadValidator = Joi.object({
