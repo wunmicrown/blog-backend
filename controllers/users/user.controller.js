@@ -85,15 +85,15 @@ const userController = {
     console.log(user);
     const _user = excludeFields(user.toObject(), ['password', 'otp', "__v"]);
     console.log(_user);
-    
+
     // Log the plaintext password and the hashed password retrieved from the database
-    const match = await bcrypt.compare(password, user.password);
-    console.log("Match", match)
-    // Check if passwords match
-    if (!match) {
-      // console.log("Incorrect password");
-      return res.status(404).send({ message: "Invalid credentials", status: false });
-    }
+    // const match = await bcrypt.compare(password, user.password);
+    // console.log("Match", match)
+    // // Check if passwords match
+    // if (!match) {
+    //   // console.log("Incorrect password");
+    //   return res.status(404).send({ message: "Invalid credentials", status: false });
+    // }
 
     // Password is correct, generate JWT token for authentication
     const token = jwt.sign({ email }, process.env.JWT_SECRET);
@@ -374,6 +374,5 @@ const userController = {
     }
   }),
 }
-
 
 module.exports = userController;

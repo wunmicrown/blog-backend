@@ -3,28 +3,87 @@ const { excludeFields } = require("../../utils/common.methods");
 const User = require("../../model/user/user.model");
 const Post = require("../../model/post/post.model");
 const Category = require("../../model/category/category.model");
-const { cloudUpload, cloudDelete } = require("../../utils/cloudinary.utils");
+const { cloudUpload } = require("../../utils/cloudinary.utils");
 require('fs').promises;
 
 const postController = {
-
+  
   // Create post
+  // createPost: asyncHandler(async (req, res) => {
+
+  //   // Get the payload
+  //   const { title, content, category,tags } = req.body;
+  // console.log(req.body);
+  //   // Find the category
+  //   const categoryFound = await Category.findById(category);
+  //   if (!categoryFound) {
+  //     throw new Error("Category not found");
+  //   }
+
+  //   // Find the user
+  //   const userFound = await User.findById(req.auth_id);
+  //   if (!userFound) {
+  //     throw new Error("User not found");
+  //   }
+
+  //   // Check if an image file is uploaded
+  //   let coverImgUrl;
+  //   if (req.file && req.file.path) {
+  //     // Use Cloudinary uploader to upload the image to the cloud
+  //     const uploadResult = await cloudUpload(req.file.path);
+  //     if (uploadResult.object && uploadResult.object.secure_url) {
+  //       // If upload was successful, use the secure URL of the uploaded image
+  //       coverImgUrl = uploadResult.object.secure_url;
+  //     } else {
+  //       // If upload failed, handle the error
+  //       throw new Error('Failed to upload image to Cloudinary');
+  //     }
+  //   }
+  //   const tagsArray = tags.split(',');
+
+  //   // Create the post with timestamp
+  //   const postCreated = await Post.create({
+  //     title,
+  //     content,
+  //     category,
+  //     author: req.auth_id,
+  //     coverImgUrl,
+  //     createdAt: new Date(),
+  //     tags: tagsArray
+  //   });
+
+  //   // Push the post ID into the category's posts array
+  //   categoryFound.posts.push(postCreated._id);
+  //   await categoryFound.save();
+
+  //   // Push the post ID into the user's posts array
+  //   userFound.posts.push(postCreated._id);
+  //   userFound.updateAccountType();
+  //   await userFound.save();
+
+  //   // Send the post data along with timestamp to the client
+  //   return res.status(200).json({
+  //     status: "success",
+  //     message: 'Post created successfully',
+  //     post: postCreated
+  //   });
+  // }),
   createPost: asyncHandler(async (req, res) => {
     // Get the payload
     const { title, content, category, tags } = req.body;
-  
+
     // Find the category
     const categoryFound = await Category.findById(category);
     if (!categoryFound) {
       throw new Error("Category not found");
     }
-  
+
     // Find the user
     const userFound = await User.findById(req.auth_id);
     if (!userFound) {
       throw new Error("User not found");
     }
-  
+
     // Check if an image file is uploaded
     let coverImgUrl;
     if (req.file && req.file.path) {
@@ -39,7 +98,7 @@ const postController = {
       }
     }
     const tagsArray = tags.split(',');
-  
+
     // Create the post with timestamp and draft set to false
     const postCreated = await Post.create({
       title,
@@ -51,16 +110,16 @@ const postController = {
       tags: tagsArray,
       draft: false, // Set draft to false
     });
-  
+
     // Push the post ID into the category's posts array
     categoryFound.posts.push(postCreated._id);
     await categoryFound.save();
-  
+
     // Push the post ID into the user's posts array
     userFound.posts.push(postCreated._id);
     userFound.updateAccountType();
     await userFound.save();
-  
+
     // Send the post data along with timestamp to the client
     return res.status(200).json({
       status: "success",
@@ -68,85 +127,28 @@ const postController = {
       post: postCreated
     });
   }),
+  
 
-// createPost: asyncHandler(async (req, res) => {
-//   // Get the payload
-//   const { title, content, category,tags } = req.body;
-// console.log(req.body);
-//   // Find the category
-//   const categoryFound = await Category.findById(category);
-//   if (!categoryFound) {
-//     throw new Error("Category not found");
-//   }
 
-//   // Find the user
-//   const userFound = await User.findById(req.auth_id);
-//   if (!userFound) {
-//     throw new Error("User not found");
-//   }
-
-//   // Check if an image file is uploaded
-//   let coverImgUrl;
-//   if (req.file && req.file.path) {
-//     // Use Cloudinary uploader to upload the image to the cloud
-//     const uploadResult = await cloudUpload(req.file.path);
-//     if (uploadResult.object && uploadResult.object.secure_url) {
-//       // If upload was successful, use the secure URL of the uploaded image
-//       coverImgUrl = uploadResult.object.secure_url;
-//     } else {
-//       // If upload failed, handle the error
-//       throw new Error('Failed to upload image to Cloudinary');
-//     }
-//   }
-//   const tagsArray = tags.split(',');
-
-//   // Create the post with timestamp
-//   const postCreated = await Post.create({
-//     title,
-//     content,
-//     category,
-//     author: req.auth_id,
-//     coverImgUrl,
-//     createdAt: new Date(),
-//     tags: tagsArray
-//   });
-
-//   // Push the post ID into the category's posts array
-//   categoryFound.posts.push(postCreated._id);
-//   await categoryFound.save();
-
-//   // Push the post ID into the user's posts array
-//   userFound.posts.push(postCreated._id);
-//   userFound.updateAccountType();
-//   await userFound.save();
-
-//   // Send the post data along with timestamp to the client
-//   return res.status(200).json({
-//     status: "success",
-//     message: 'Post created successfully',
-//     post: postCreated
-//   });
-// }),
-
- 
-   // Fetch post details by postId
-   fetchPostDetails: asyncHandler(async (req, res) => {
+  // Fetch post details by postId
+  
+  fetchPostDetails: asyncHandler(async (req, res) => {
     try {
       const { postId } = req.params;
       console.log("postId", postId)
       let post = await Post.findById(postId)
         .populate("author")
         .populate("category_id")
-        .select(+{ timestamp: true }); 
-  
+        .select(+{ timestamp: true });
+
       // Check if post exists
       if (!post) {
         return res.status(404).json({ message: "Post not found" });
       }
-  
+
       // Exclude sensitive fields from the author object
       post.author = excludeFields(post.author.toObject(), ["otp", "password", "__v"]);
-  
+
       // Send the response with modified post object
       res.status(200).json({ post });
     } catch (error) {
@@ -154,7 +156,7 @@ const postController = {
       res.status(500).json({ message: "Internal server error" });
     }
   }),
-  
+
 
   //!list all posts
   fetchAllPosts: asyncHandler(async (req, res) => {
@@ -168,11 +170,44 @@ const postController = {
       filter.content = { $regex: title, $options: "i" }; //case insensitive
     }
 
-    const posts = await Post.find(filter)
-      .populate("category_id")
-      .sort({ createdAt: -1 })
-      .skip((page - 1) * limit)
-      .limit(limit);
+    const posts = await Post.aggregate([
+      {$match: filter},
+
+      {$lookup:{
+        from: "users",
+        localField: "author",
+        foreignField: "_id",
+        as: "user"
+      }},
+
+      {$unwind:{
+        path:"$user",
+        preserveNullAndEmptyArrays: true
+      }},
+
+      {$project:{
+        "_id":0,
+        "id":"$_id",
+        "title":"$title",
+        "coverImgUrl":"$coverImgUrl",
+        "content":"$content",
+        "authorId":"$user._id",
+        "authorEmail":"$user.email",
+        "authorUsername":"$user.username",
+        "authorProfilePic":"$user.profilePic",
+        category_id:"$category_id",
+        createdAt:"$createdAt",
+        "tags":1,
+      }},
+
+      {$sort:{
+        createdAt:-1
+      }},
+      {$skip: (page - 1) * limit},
+      {$limit: limit}
+
+    ])
+     
     //total posts
     const totalPosts = await Post.countDocuments(filter);
     res.json({
@@ -182,9 +217,11 @@ const postController = {
       currentPage: page,
       perPage: limit,
       totalPages: Math.ceil(totalPosts / limit),
-      // author: userFound.username,
     });
   }),
+  // List all posts with user likes and dislikes count using aggregation
+  
+
 
   //! delete posts
   delete: asyncHandler(async (req, res) => {
@@ -281,4 +318,3 @@ const postController = {
 };
 
 module.exports = postController;
-
