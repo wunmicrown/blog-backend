@@ -7,7 +7,7 @@ const { cloudUpload } = require("../../utils/cloudinary.utils");
 require('fs').promises;
 
 const postController = {
-  
+
   // Create post
   // createPost: asyncHandler(async (req, res) => {
 
@@ -127,11 +127,11 @@ const postController = {
       post: postCreated
     });
   }),
-  
+
 
 
   // Fetch post details by postId
-  
+
   fetchPostDetails: asyncHandler(async (req, res) => {
     try {
       const { postId } = req.params;
@@ -160,6 +160,133 @@ const postController = {
 
   //!list all posts
   fetchAllPosts: asyncHandler(async (req, res) => {
+    const { category_id, title, page = 1, limit = 10 } = req.query;
+    // Basic filter
+    let filter = {};
+    if (category_id) {
+      filter.category_id = category_id;
+    }
+    if (title) {
+      filter.content = { $regex: title, $options: "i" };
+    }
+
+    // Calculate the date two weeks ago
+    const twoWeeksAgo = new Date();
+    twoWeeksAgo.setDate(twoWeeksAgo.getDate() - 14);
+
+    // Aggregation for latest posts
+    const latestPostsArray= [
+      {
+        $match: filter
+      },
+      {
+        $match: {
+          createdAt: { $gte: twoWeeksAgo }
+        }
+      },
+      // Fetch posts created within the last two weeks
+      {
+        $lookup: {
+          from: "users",
+          localField: "author", 
+          foreignField: "_id",
+          as: "user"
+        }
+      },
+      {
+        $unwind: {
+          path: "$user",
+          preserveNullAndEmptyArrays: true
+        }
+      },
+      {
+        $project: {
+          "_id": 0,
+          "id": "$_id",
+          "title": 1,
+          "coverImgUrl": 1,
+          "content": 1,
+          "authorId": "$user._id",
+          "authorEmail": "$user.email",
+          "authorUsername": "$user.username",
+          "authorProfilePic": "$user.profilePic",
+          "category_id": 1,
+          "createdAt": 1,
+          "tags": 1,
+        }
+      },
+      { $sort: { createdAt: -1 } },
+      { $skip: (page - 1) * limit },
+      { $limit: limit }
+    ];
+
+    // Aggregation for trending posts
+    const trendingPostsArray = [
+      { $match: filter }, // Apply existing filters
+      {
+        $match: {
+          createdAt: { $gte: twoWeeksAgo },
+          $expr: { $gt: [{ $size: { $ifNull: ["$comments", []] } }, 4] } // Check if the size of the comments array is greater than 5
+        }
+      },
+
+      {
+        $lookup: {
+          from: "users",
+          localField: "author",
+          foreignField: "_id",
+          as: "user"
+        }
+      },
+      {
+        $unwind: {
+          path: "$user",
+          preserveNullAndEmptyArrays: true
+        }
+      },
+      {
+        $project: {
+          "_id": 0,
+          "id": "$_id",
+          "title": 1,
+          "coverImgUrl": 1,
+          "content": 1,
+          "authorId": "$user._id",
+          "authorEmail": "$user.email",
+          "authorUsername": "$user.username",
+          "authorProfilePic": "$user.profilePic",
+          "category_id": 1,
+          "createdAt": 1,
+          "tags": 1,
+        }
+      },
+      { $sort: { createdAt: -1 } },
+      { $skip: (page - 1) * limit },
+      { $limit: limit }
+    ];
+
+    // Execute aggregation queries
+    const [latestPosts, trendingPosts] = await Promise.all([
+      Post.aggregate(latestPostsArray),
+      Post.aggregate(trendingPostsArray)
+    ]);
+
+    // Total posts
+    const totalPosts = await Post.countDocuments(filter);
+
+    // Send response to the client
+    res.json({
+      status: "success",
+      message: "Posts fetched successfully",
+      latestPosts,
+      trendingPosts,
+      currentPage: page,
+      perPage: limit,
+      totalPages: Math.ceil(totalPosts / limit)
+    });
+  }),
+
+  AllPosts: asyncHandler(async (req, res) => {
     const { category_id, title, page = 1, limit = 300 } = req.query;
     //Basic filter
     let filter = {};
@@ -207,7 +334,7 @@ const postController = {
       {$limit: limit}
 
     ])
-     
+
     //total posts
     const totalPosts = await Post.countDocuments(filter);
     res.json({
@@ -220,10 +347,9 @@ const postController = {
     });
   }),
   // List all posts with user likes and dislikes count using aggregation
-  
 
-
-  //! delete posts
+  // ! delete posts
+ 
   delete: asyncHandler(async (req, res) => {
     //get the post id from params
     const postId = req.params.postId;
