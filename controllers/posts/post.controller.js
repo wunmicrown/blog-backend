@@ -349,7 +349,34 @@ const postController = {
   // List all posts with user likes and dislikes count using aggregation
 
   // ! delete posts
- 
+  // delete: asyncHandler(async (req, res) => {
+  //   try {
+  //     //get the post id from params
+  //   const postId = req.params.postId;
+  //   const post=await Post.findById(postId)    
+  //   if(!post){
+  //     return res.status(404).json({
+  //       status: "fail",
+  //       message: "Post not found",
+  //     })
+  //   }
+  //    // Check if the logged-in user is the author of the post
+  //    if (post.author !== req.auth_id) {
+  //     return res.status(403).json({
+  //         status: "error",
+  //         message: "You are not authorized to delete this post",
+  //     });
+  // }
+  //   //find the post
+  //   await Post.findByIdAndDelete(postId);
+  //   res.json({
+  //     status: "success",
+  //     message: "Post deleted successfully",
+  //   });
+  //   } catch (error) {
+
+  // }
+  // }),
   delete: asyncHandler(async (req, res) => {
     //get the post id from params
     const postId = req.params.postId;
