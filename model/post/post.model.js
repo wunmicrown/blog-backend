@@ -22,9 +22,11 @@ const postSchema = new Schema(
       ref: "User",
       required: true,
     },
-    published: { type: Boolean },
-    draft: { type: Boolean, default: false }, 
-
+    published: { 
+      type: String,
+      default: "draft",
+      enum: ["draft", "published"]
+    },
     category_id: { type: Schema.Types.ObjectId, ref: "Category", key:"" },
 
     // Interactions

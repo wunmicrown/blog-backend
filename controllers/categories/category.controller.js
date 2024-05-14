@@ -63,7 +63,7 @@ const categoryController = {
     if (!categoryFound) {
       throw new Error("Category  not found");
     }
-    console.log(categoryId);
+    // console.log(categoryId);
     //update
     const categoryUpdated = await Category.findByIdAndUpdate(
       categoryId,

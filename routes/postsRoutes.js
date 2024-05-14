@@ -15,6 +15,7 @@ postsRoutes.post("/create", TOKEN_MIDDLEWARE, multerCloudUploader.single("image"
 //----lists all posts----
 postsRoutes.get("/", postController.fetchAllPosts);
 postsRoutes.get("/all-posts", postController.AllPosts);
+postsRoutes.get("/user-Stats", TOKEN_MIDDLEWARE, postController.getUserPostStats);
 
 // Fetch post details by postId
 postsRoutes.get("/:postId", postController.fetchPostDetails); 

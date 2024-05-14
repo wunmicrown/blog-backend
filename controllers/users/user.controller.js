@@ -76,15 +76,15 @@ const userController = {
     console.log({ email, password });
     // Find the user by email
     const user = await User.findOne({ email });
-    console.log(user)
+    // console.log(user)
     // Check if user exists
     if (!user) {
       console.log("User not found");
       return res.status(404).json({ message: "Invalid credentials", status: false });
     }
-    console.log(user);
+    // console.log(user);
     const _user = excludeFields(user.toObject(), ['password', 'otp', "__v"]);
-    console.log(_user);
+    // console.log(_user);
 
     // Log the plaintext password and the hashed password retrieved from the database
     // const match = await bcrypt.compare(password, user.password);
@@ -118,11 +118,9 @@ const userController = {
   // Backend code to handle OTP verification
   verifyEmail: asyncHandler(async (req, res) => {
     const { email, otp } = req.body;
-    console.log({ email, otp });
     try {
       // Find the user by email
       let user = await User.findOne({ otp, email });
-      console.log(user);
       if (!user) {
         return res.status(400).json({ message: "Invalid OTP" });
       }
@@ -147,7 +145,6 @@ const userController = {
   */
   resendOTP: asyncHandler(async (req, res) => {
     const { email } = req.body;
-    console.log("Email", { email })
     try {
       const user = await User.findOne({ email });
       const { username } = user;
@@ -178,7 +175,6 @@ const userController = {
     try {
       // Find the user by email
       const userEmail = await User.findOne({ email });
-      console.log("userEmail:", userEmail);
       const { username } = userEmail;
 
       if (userEmail) {
@@ -208,7 +204,7 @@ const userController = {
  */
   resetPassword: asyncHandler(async (req, res) => {
     const { email, newPassword } = req.body;
-    console.log("email:", email, "newPassword:", newPassword);
+    // console.log("email:", email, "newPassword:", newPassword);
 
     // Validate the request payload
     if (!email || !newPassword) {
@@ -217,11 +213,10 @@ const userController = {
 
     // Hash the new password
     const hashedPassword = await bcrypt.hash(newPassword, 10);
-    console.log(hashedPassword)
+    // console.log(hashedPassword)
     // Update the user's password in the database
     try {
       const updateUser = await User.findOneAndUpdate({ email }, { password: hashedPassword });
-      console.log(updateUser)
       if (updateUser) {
         // Password reset successful
         return res.status(200).json({ message: 'Password reset successful', status: true });
@@ -239,14 +234,12 @@ const userController = {
   changePassword: asyncHandler(async (req, res) => {
     try {
       const { email, oldPassword, newPassword } = req.body;
-      console.log({ email, oldPassword, newPassword });
 
       // Hash the new password
       const hashedNewPassword = await bcrypt.hash(newPassword, 10);
 
       // Find the user by email and update the password
       const user = await User.findOneAndUpdate({ email }, { password: hashedNewPassword }, { new: true });
-      console.log(user);
       // Check if user exists
       if (!user) {
         return res.status(404).json({ message: 'User not found' });
@@ -254,7 +247,6 @@ const userController = {
 
       // Compare the old password provided with the hashed password stored in the database
       const isPasswordValid = await bcrypt.compare(oldPassword, user.password);
-      console.log(isPasswordValid);
       // If the old password is not valid, return an error
       if (isPasswordValid) {
         return res.status(400).json({ message: 'Invalid old password' });
@@ -272,7 +264,6 @@ const userController = {
     try {
       const { email, password } = req.body;
       const userId = req.auth_id; // Extract user ID from authenticated request
-      console.log(email, password)
       // Fetch user data
       const user = await User.findById(userId);
 
@@ -327,7 +318,6 @@ const userController = {
     }
 
     const user = await User.findById(req.auth_id);
-    console.log("User:", user);
     const oldPic = user.profilePic ?? null;
     if (oldPic) {
       // Below for cloudinary deletion
@@ -359,9 +349,7 @@ const userController = {
       // req.auth_id from middle ware
       // Retrieve user details from the database based on the authenticated user's ID
       const userId = req.auth_id; // Assuming you're storing the user ID in the JWT payload
-      console.log(userId);
       const user = await User.findById(userId).select('-password -otp -__v');
-      console.log({ user });
       // Check if user exists
       if (!user) {
         return res.status(404).json({ message: "User not found" });
