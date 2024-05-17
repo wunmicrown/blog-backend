@@ -5,29 +5,29 @@ require('dotenv').config();
 const URI = process.env.TEST_MONGODB_URI;
 
 mongoose.connect(URI)
-    .then(() => {
-        console.log(`Connected to database successfully`);
-    }).catch((err) => {
-        console.log(`Error while connecting to database ${err}`);
-    });
+  .then(() => {
+    console.log(`Connected to database successfully`);
+  }).catch((err) => {
+    console.log(`Error while connecting to database ${err}`);
+  });
 
 const postSchema = new Schema(
   {
     title: { type: String, required: true, trim: true },
     coverImgUrl: { type: String },
     content: { type: String },
-    tags: [{ type:String }], 
+    tags: [{ type: String }],
     author: {
       type: Schema.Types.ObjectId,
       ref: "User",
       required: true,
     },
-    published: { 
+    status: {
       type: String,
-      default: "draft",
+      default: "Published",
       enum: ["draft", "published"]
     },
-    category_id: { type: Schema.Types.ObjectId, ref: "Category", key:"" },
+    category_id: { type: Schema.Types.ObjectId, ref: "Category", key: "" },
 
     // Interactions
     likes: [{ type: Schema.Types.ObjectId, ref: "User" }],
@@ -35,7 +35,7 @@ const postSchema = new Schema(
     viewers: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
     // Comments
     comments: [{ type: Schema.Types.ObjectId, ref: "Comment" }],
-    commentsCount: { type: Number, default: 0 }, 
+    commentsCount: { type: Number, default: 0 },
 
   },
   { timestamps: true }

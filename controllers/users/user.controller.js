@@ -37,30 +37,48 @@ const userController = {
  * @returns {Promise<void>} - A promise that resolves once the registration process is complete.
  */
   register: asyncHandler(async (req, res) => {
+    const { name, username, email, password, userType } = req.body;
 
-    const { username, email, password, userType } = req.body;
-    // console.log({ emailBody: email, username: username, password: password ,userType:userType});
+    try {
+      // Check if the username already exists
+      const usernameExists = await User.findOne({ username });
+      if (usernameExists) {
+        return res.status(409).json({ error: "Username has already been taken" });
+      }
 
-    const userExists = await User.findOne({ email });
-    if (userExists) {
-      return res.status(409).send("User already exists");
+      // Check if the email already exists
+      const emailExists = await User.findOne({ email });
+      if (emailExists) {
+        return res.status(409).json({ error: "Email address has already been registered" });
+      }
+
+      // Hash the password
+      const hashedPassword = await bcrypt.hash(password, 10);
+
+      // Create a new user
+      const newUser = new User({ name, username, email, password: hashedPassword, userType });
+      await newUser.save();
+      const _user = excludeFields(newUser.toObject(), ['password', 'otp', "__v"]);
+      // Send verification email
+      await sendOtpEmail(email, username);
+
+      // Respond with success message
+
+      return res.status(200).json(
+        {
+          message: "Registration successful. Please check your email to verify your account.",
+          status: true,
+          user: _user
+        }
+      );
+
+    } catch (error) {
+      // Handle other errors
+      console.error("Error registering user:", error);
+      return res.status(500).json({ error: "Internal server error" });
     }
-
-    //Hash the password
-    const hashedPassword = await bcrypt.hash(password, 10);
-    console.log("password:", hashedPassword);
-
-
-    // const newUser = new User(req.body);
-    const newUser = new User({ username, email, password: hashedPassword, userType });
-
-    const _user = excludeFields(newUser.toObject(), ['password', 'otp', "__v"]);
-    console.log("newUser:", newUser);
-    await newUser.save();
-    await sendOtpEmail(email, username);
-    console.log(sendOtpEmail(email, username));
-    return res.status(200).json({ message: 'Registration successful. Please check your email to verify your account.', user: _user });
   }),
+
 
   // ! Login
   /**

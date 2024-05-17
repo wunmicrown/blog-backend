@@ -4,6 +4,11 @@ const Joi = require("joi");
 
 /** The validator for user register payload */
 const registerPayloadValidator = Joi.object({
+   name: Joi.string()
+        .alphanum()
+        .min(3)
+        .max(40)
+        .required(),
     username: Joi.string()
         .alphanum()
         .min(3)
