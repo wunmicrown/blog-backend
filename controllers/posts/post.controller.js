@@ -87,7 +87,7 @@ const postController = {
     const { category_id, title, page = 1, limit = 10 } = req.query;
 
     // Basic filter
-    let filter = {};
+    let filter = { status: "published" }; // Only include published posts
     if (category_id) {
       filter.category_id = category_id;
     }
@@ -142,7 +142,6 @@ const postController = {
       {
         $match: {
           ...filter,
-          status: "published",
           createdAt: { $gte: twoWeeksAgo }
         }
       },
@@ -154,7 +153,6 @@ const postController = {
       {
         $match: {
           ...filter,
-          status: "published",
           createdAt: { $gte: twoWeeksAgo },
           $expr: { $gt: [{ $size: { $ifNull: ["$comments", []] } }, 4] }
         }
@@ -162,26 +160,13 @@ const postController = {
       ...commonStages
     ];
 
-    // Aggregation for draft posts
-    const draftPostsArray = [
-      {
-        $match: {
-          ...filter,
-          status: "draft"
-        }
-      },
-      ...commonStages
-    ];
-
-    // Execute aggregation queries
-    const [latestPublishedPosts, trendingPublishedPosts, draftPosts] = await Promise.all([
+    
+    const [latestPublishedPosts, trendingPublishedPosts, totalPosts, totalUsers] = await Promise.all([
       Post.aggregate(latestPublishedPostsArray),
       Post.aggregate(trendingPublishedPostsArray),
-      Post.aggregate(draftPostsArray)
+      Post.countDocuments(filter), // Count only published posts
+      User.countDocuments({})
     ]);
-
-    // Total posts
-    const totalPosts = await Post.countDocuments(filter);
 
     // Send response to the client
     res.json({
@@ -189,13 +174,15 @@ const postController = {
       message: "Posts fetched successfully",
       latestPublishedPosts,
       trendingPublishedPosts,
-      draftPosts,
       currentPage: page,
       perPage: limit,
-      totalPages: Math.ceil(totalPosts / limit)
+      totalPages: Math.ceil(totalPosts / limit),
+      totalUsers,
+      totalPosts
     });
   }),
 
+  
   AllPosts: asyncHandler(async (req, res) => {
     const { category_id, title, page = 1, limit = 300 } = req.query;
     // Basic filter
@@ -496,7 +483,8 @@ const postController = {
     // console.log("postId:", postId)
     //find the post
     const postFound = await Post.findById(postId);
-    // console.log("postFound:", postFound)
+    console.log("postFound:", postFound)
+
     //check if post exists
     if (!postFound) {
       throw new Error("Post  not found");
