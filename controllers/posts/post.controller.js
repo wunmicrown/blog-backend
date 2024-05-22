@@ -82,12 +82,11 @@ const postController = {
     }
   }),
 
-  //!list all posts
   fetchAllPosts: asyncHandler(async (req, res) => {
     const { category_id, title, page = 1, limit = 10 } = req.query;
 
     // Basic filter
-    let filter = { status: "published" };
+    let filter = {};
     if (category_id) {
       filter.category_id = category_id;
     }
@@ -142,6 +141,7 @@ const postController = {
       {
         $match: {
           ...filter,
+          status: "published",
           createdAt: { $gte: twoWeeksAgo }
         }
       },
@@ -153,6 +153,7 @@ const postController = {
       {
         $match: {
           ...filter,
+          status: "published",
           createdAt: { $gte: twoWeeksAgo },
           $expr: { $gt: [{ $size: { $ifNull: ["$comments", []] } }, 4] }
         }
@@ -160,11 +161,23 @@ const postController = {
       ...commonStages
     ];
 
+    // Aggregation for draft posts
+    const draftPostsArray = [
+      {
+        $match: {
+          ...filter,
+          status: "draft"
+        }
+      },
+      ...commonStages
+    ];
 
-    const [latestPublishedPosts, trendingPublishedPosts, totalPosts, totalUsers] = await Promise.all([
+    // Execute aggregation queries
+    const [latestPublishedPosts, trendingPublishedPosts, draftPosts, totalPosts, totalUsers] = await Promise.all([
       Post.aggregate(latestPublishedPostsArray),
       Post.aggregate(trendingPublishedPostsArray),
-      Post.countDocuments(filter), // Count only published posts
+      Post.aggregate(draftPostsArray),
+      Post.countDocuments(filter),
       User.countDocuments({})
     ]);
 
@@ -174,6 +187,7 @@ const postController = {
       message: "Posts fetched successfully",
       latestPublishedPosts,
       trendingPublishedPosts,
+      draftPosts,
       currentPage: page,
       perPage: limit,
       totalPages: Math.ceil(totalPosts / limit),
@@ -242,7 +256,6 @@ const postController = {
     // Define a function to get user post statistics
     const getUserPostStats = async (auth_id) => {
       const stats = await Post.aggregate([
-
         // Match posts by user ID
         { $match: { author: auth_id } },
         // Project necessary fields
@@ -436,35 +449,6 @@ const postController = {
   }),
 
 
-  // delete: asyncHandler(async (req, res) => {
-  //   try {
-  //     //get the post id from params
-  //     const postId = req.params.postId;
-  //     const post = await Post.findById(postId)
-  //     if (!post) {
-  //       return res.status(404).json({
-  //         status: "fail",
-  //         message: "Post not found",
-  //       })
-  //     }
-  //     // Check if the logged-in user is the author of the post
-  //     if (post.author !== req.auth_id) {
-  //       return res.status(403).json({
-  //         status: "error",
-  //         message: "You are not authorized to delete this post",
-  //       });
-  //     }
-  //     //find the post
-  //     await Post.findByIdAndDelete(postId);
-  //     res.json({
-  //       status: "success",
-  //       message: "Post deleted successfully",
-  //     });
-  //   } catch (error) {
-
-  //   }
-  // }),
-
   delete: asyncHandler(async (req, res) => {
     //get the post id from params
     const postId = req.params.postId;
@@ -476,7 +460,8 @@ const postController = {
     });
   }),
 
-  //! update post
+  
+  // ! update post
   update: asyncHandler(async (req, res) => {
     //get the post id from params
     const postId = req.params.postId;
