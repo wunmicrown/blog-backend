@@ -87,7 +87,7 @@ const postController = {
     const { category_id, title, page = 1, limit = 10 } = req.query;
 
     // Basic filter
-    let filter = { status: "published" }; // Only include published posts
+    let filter = { status: "published" };
     if (category_id) {
       filter.category_id = category_id;
     }
@@ -160,7 +160,7 @@ const postController = {
       ...commonStages
     ];
 
-    
+
     const [latestPublishedPosts, trendingPublishedPosts, totalPosts, totalUsers] = await Promise.all([
       Post.aggregate(latestPublishedPostsArray),
       Post.aggregate(trendingPublishedPostsArray),
@@ -182,7 +182,6 @@ const postController = {
     });
   }),
 
-  
   AllPosts: asyncHandler(async (req, res) => {
     const { category_id, title, page = 1, limit = 300 } = req.query;
     // Basic filter
@@ -191,7 +190,7 @@ const postController = {
       filter.category_id = category_id;
     }
     if (title) {
-      filter.content = { $regex: title, $options: "i" }; //case insensitive
+      filter.content = { $regex: title, $options: "i" };
     }
 
     const posts = await Post.aggregate([
@@ -243,6 +242,7 @@ const postController = {
     // Define a function to get user post statistics
     const getUserPostStats = async (auth_id) => {
       const stats = await Post.aggregate([
+
         // Match posts by user ID
         { $match: { author: auth_id } },
         // Project necessary fields

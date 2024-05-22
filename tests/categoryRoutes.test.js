@@ -55,3 +55,118 @@ describe("Category Routes", () => {
   });
 
 });
+
+
+
+  // fetchAllPosts: asyncHandler(async (req, res) => {
+  //   const { category_id, title, page = 1, limit = 10 } = req.query;
+
+  //   // Basic filter
+  //   let filter = {};
+  //   if (category_id) {
+  //     filter.category_id = category_id;
+  //   }
+  //   if (title) {
+  //     filter.content = { $regex: title, $options: "i" };
+  //   }
+
+  //   // Calculate the date two weeks ago
+  //   const twoWeeksAgo = new Date();
+  //   twoWeeksAgo.setDate(twoWeeksAgo.getDate() - 14);
+
+  //   // Common pipeline stages
+  //   const commonStages = [
+  //     {
+  //       $lookup: {
+  //         from: "users",
+  //         localField: "author",  
+  //         foreignField: "_id",
+  //         as: "user"
+  //       }
+  //     },
+  //     {
+  //       $unwind: {
+  //         path: "$user",
+  //         preserveNullAndEmptyArrays: true
+  //       }
+  //     },
+  //     {
+  //       $project: {
+  //         "_id": 0,
+  //         "id": "$_id",
+  //         "title": 1,
+  //         "coverImgUrl": 1,
+  //         "content": 1,
+  //         "authorId": "$user._id",
+  //         "authorEmail": "$user.email",
+  //         "authorUsername": "$user.username",
+  //         "authorProfilePic": "$user.profilePic",
+  //         "category_id": 1,
+  //         "createdAt": 1,
+  //         "tags": 1,
+  //         "status": 1
+  //       }
+  //     },
+  //     { $sort: { createdAt: -1 } },
+  //     { $skip: (page - 1) * limit },
+  //     { $limit: limit }
+  //   ];
+
+  //   // Aggregation for latest published posts
+  //   const latestPublishedPostsArray = [
+  //     {
+  //       $match: {
+  //         ...filter,
+  //         status: "published",
+  //         createdAt: { $gte: twoWeeksAgo }
+  //       }
+  //     },
+  //     ...commonStages
+  //   ];
+
+  //   // Aggregation for trending published posts
+  //   const trendingPublishedPostsArray = [
+  //     {
+  //       $match: {
+  //         ...filter,
+  //         status: "published",
+  //         createdAt: { $gte: twoWeeksAgo },
+  //         $expr: { $gt: [{ $size: { $ifNull: ["$comments", []] } }, 4] }
+  //       }
+  //     },
+  //     ...commonStages
+  //   ];
+
+  //   // Aggregation for draft posts
+  //   const draftPostsArray = [
+  //     {
+  //       $match: {
+  //         ...filter,
+  //         status: "draft"
+  //       }
+  //     },
+  //     ...commonStages
+  //   ];
+
+  //   // Execute aggregation queries
+  //   const [latestPublishedPosts, trendingPublishedPosts, draftPosts] = await Promise.all([
+  //     Post.aggregate(latestPublishedPostsArray),
+  //     Post.aggregate(trendingPublishedPostsArray),
+  //     Post.aggregate(draftPostsArray)
+  //   ]);
+
+  //   // Total posts
+  //   const totalPosts = await Post.countDocuments(filter);
+
+  //   // Send response to the client
+  //   res.json({
+  //     status: "success",
+  //     message: "Posts fetched successfully",
+  //     latestPublishedPosts,
+  //     trendingPublishedPosts,
+  //     draftPosts,
+  //     currentPage: page,
+  //     perPage: limit,
+  //     totalPages: Math.ceil(totalPosts / limit)
+  //   });
+  // }),
