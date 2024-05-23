@@ -35,7 +35,6 @@ const postSchema = new Schema(
     viewers: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
     // Comments
     comments: [{ type: Schema.Types.ObjectId, ref: "Comment" }],
-    commentsCount: { type: Number, default: 0 },
 
   },
   { timestamps: true }
