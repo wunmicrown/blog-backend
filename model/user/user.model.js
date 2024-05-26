@@ -2,7 +2,7 @@ const mongoose = require('mongoose')
 require('dotenv').config()
 const bcrypt = require('bcrypt')
 
-const URI = process.env.MONGODB_URI;
+const URI = process.env.TEST_MONGODB_URI;
 
 mongoose.connect(URI)
   .then(() => {
@@ -14,6 +14,7 @@ mongoose.connect(URI)
 let userSchema = new mongoose.Schema(
     {
         // Basic user information
+
         name: {
             type: String,
             required: true,
