@@ -14,7 +14,6 @@ mongoose.connect(URI)
 let userSchema = new mongoose.Schema(
     {
         // Basic user information
-
         name: {
             type: String,
             required: true,
