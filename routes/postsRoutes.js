@@ -18,7 +18,7 @@ postsRoutes.get("/all-posts", postController.AllPosts);
 postsRoutes.get("/user-Stats", TOKEN_MIDDLEWARE, postController.getUserPostStats);
 
 // Fetch post details by postId
-postsRoutes.get("/:postId", postController.fetchPostDetails); 
+postsRoutes.get("/:postId", postController.fetchPostDetails);
 
 // ---delete post---
 postsRoutes.delete("/:postId", TOKEN_MIDDLEWARE, postController.delete);

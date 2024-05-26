@@ -38,7 +38,6 @@ const userController = {
  */
   register: asyncHandler(async (req, res) => {
     const { name, username, email, password, userType } = req.body;
-
     try {
       // Check if the username already exists
       const usernameExists = await User.findOne({ username });
@@ -57,6 +56,7 @@ const userController = {
 
       // Create a new user
       const newUser = new User({ name, username, email, password: hashedPassword, userType });
+      console.log("newUser", newUser);
       await newUser.save();
       const _user = excludeFields(newUser.toObject(), ['password', 'otp', "__v"]);
       // Send verification email
@@ -91,7 +91,6 @@ const userController = {
   login: asyncHandler(async (req, res) => {
     // Destructure email and password from the request body
     const { email, password } = req.body;
-    console.log({ email, password });
     // Find the user by email
     const user = await User.findOne({ email });
     // console.log(user)
@@ -139,6 +138,7 @@ const userController = {
     try {
       // Find the user by email
       let user = await User.findOne({ otp, email });
+      console.log(user)
       if (!user) {
         return res.status(400).json({ message: "Invalid OTP" });
       }
@@ -175,9 +175,6 @@ const userController = {
       return res.status(500).json({ message: 'Internal server error' });
     }
   }),
-
-
-
 
 
   // !ResetEmail

@@ -460,7 +460,7 @@ const postController = {
     });
   }),
 
-  
+
   // ! update post
   update: asyncHandler(async (req, res) => {
     //get the post id from params
@@ -472,7 +472,7 @@ const postController = {
 
     //check if post exists
     if (!postFound) {
-      throw new Error("Post  not found");
+      throw new Error("Post not found");
     }
     //update
     const postUpdted = await Post.findByIdAndUpdate(
@@ -488,58 +488,47 @@ const postController = {
     });
   }),
 
-  //like post
+  // Like post
   like: asyncHandler(async (req, res) => {
-    //Post id
     const postId = req.params.postId;
-    //user liking a post
     const userId = req.auth_id;
-    //Find the post
-    const post = await Post.findById(postId);
-    //Check if a user has already disliked the post
-    if (post?.dislikes.includes(userId)) {
-      post?.dislikes?.pull(userId);
-    }
-    //Check if a user has already liked the post
-    if (post?.likes.includes(userId)) {
-      post?.likes?.pull(userId);
-    } else {
-      post?.likes?.push(userId);
-    }
-    //resave the post
-    await post.save();
-    //send the response
-    res.json({
-      message: "Post Liked",
-    });
 
+    const updatedPost = await Post.findOneAndUpdate(
+      { _id: postId },
+      {
+        $addToSet: { likes: userId },
+        $pull: { dislikes: userId },
+      },
+      { new: true }
+    );
 
+    if (!updatedPost) {
+      return res.status(404).json({ message: "Post not found" });
+    }
+
+    res.json({ message: "Post liked", likes: updatedPost.likes, dislikes: updatedPost.dislikes });
   }),
 
-  //like post
+  // Dislike post
   dislike: asyncHandler(async (req, res) => {
-    //Post id
     const postId = req.params.postId;
-    //user liking a post
     const userId = req.auth_id;
-    //Find the post
-    const post = await Post.findById(postId);
-    //Check if a user has already liked the post
-    if (post?.likes.includes(userId)) {
-      post?.likes?.pull(userId);
+
+    const updatedPost = await Post.findOneAndUpdate(
+      { _id: postId },
+      {
+        $addToSet: { dislikes: userId },
+        $pull: { likes: userId }, 
+      },
+      { new: true }
+    );
+
+    if (!updatedPost) {
+      return res.status(404).json({ message: "Post not found" });
     }
-    //Check if a user has already disliked the post
-    if (post?.dislikes.includes(userId)) {
-      post?.dislikes?.pull(userId);
-    } else {
-      post?.dislikes?.push(userId);
-    }
-    //resave the post
-    await post.save();
-    //send the response
-    res.json({
-      message: "Post Disliked",
-    });
+
+    res.json({ message: "Post disliked", likes: updatedPost.likes, dislikes: updatedPost.dislikes });
+    console.log({ message: "Post disliked", likes: updatedPost.likes, dislikes: updatedPost.dislikes })
   }),
 };
 

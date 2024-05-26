@@ -2,15 +2,6 @@ const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 require('dotenv').config();
 
-const URI = process.env.TEST_MONGODB_URI;
-
-mongoose.connect(URI)
-  .then(() => {
-    console.log(`Connected to database successfully`);
-  }).catch((err) => {
-    console.log(`Error while connecting to database ${err}`);
-  });
-
 const postSchema = new Schema(
   {
     title: { type: String, required: true, trim: true },
