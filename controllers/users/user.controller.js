@@ -18,7 +18,7 @@ const generateSixDigitNumber = () => {
 const transporter = nodemailer.createTransport({
   host: process.env.MAIL_HOST,
   port: process.env.MAIL_PORT,
-  secure: process.env.MAIL_USE_TLS, // Convert string to boolean
+  secure: process.env.MAIL_USE_TLS, 
   auth: {
     user: process.env.MAIL_USER,
     pass: process.env.MAIL_PASS,
@@ -41,6 +41,7 @@ const userController = {
     try {
       // Check if the username already exists
       const usernameExists = await User.findOne({ username });
+      console.log("usernameExists",usernameExists)
       if (usernameExists) {
         return res.status(409).json({ error: "Username has already been taken" });
       }

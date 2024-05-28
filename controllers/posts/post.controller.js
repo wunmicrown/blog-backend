@@ -460,31 +460,36 @@ const postController = {
     });
   }),
 
-
   // ! update post
   update: asyncHandler(async (req, res) => {
-    //get the post id from params
     const postId = req.params.postId;
-    // console.log("postId:", postId)
-    //find the post
-    const postFound = await Post.findById(postId);
-    console.log("postFound:", postFound)
 
-    //check if post exists
+    const postFound = await Post.findById(postId);
     if (!postFound) {
       throw new Error("Post not found");
     }
-    //update
-    const postUpdted = await Post.findByIdAndUpdate(
+
+    const updateData = {
+      title: req.body.title,
+      content: req.body.content,
+      category: req.body.category,
+      tags: req.body.tags ? req.body.tags.split(',') : [],
+      status: req.body.status
+    };
+
+    // Update the image URL if a new file is uploaded
+    if (req.file) {
+      updateData.coverImgUrl = req.file.path;
+    }
+
+    const postUpdated = await Post.findByIdAndUpdate(
       postId,
-      { content: req.body.content, image: req.file },
-      {
-        new: true,
-      }
+      updateData,
+      { new: true }
     );
     res.json({
       status: "Post updated successfully",
-      postUpdted,
+      postUpdated,
     });
   }),
 
@@ -518,7 +523,7 @@ const postController = {
       { _id: postId },
       {
         $addToSet: { dislikes: userId },
-        $pull: { likes: userId }, 
+        $pull: { likes: userId },
       },
       { new: true }
     );
