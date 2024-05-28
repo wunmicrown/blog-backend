@@ -34,9 +34,6 @@ const TOKEN_MIDDLEWARE = (req, res, next) => {
         req.auth_email = email
         req.auth_id = user._id;
 
-        // console.log('Middleware - req.params:', req.params);  // Log request params
-        // console.log('Middleware - req.auth_id:', req.auth_id);  // Log auth_id for debugging
-
         next()
       } catch (error) {
         return res.status(401).send({ message: 'Unauthorized request, please login', status: false });

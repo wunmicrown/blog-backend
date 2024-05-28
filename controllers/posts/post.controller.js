@@ -528,7 +528,6 @@ const postController = {
     }
 
     res.json({ message: "Post disliked", likes: updatedPost.likes, dislikes: updatedPost.dislikes });
-    console.log({ message: "Post disliked", likes: updatedPost.likes, dislikes: updatedPost.dislikes })
   }),
 };
 
