@@ -158,7 +158,12 @@ const postController = {
           ...filter,
           status: "published",
           createdAt: { $gte: twoWeeksAgo },
-          $expr: { $gt: [{ $size: { $ifNull: ["$comments", []] } }, 4] }
+          $expr: {
+            $and: [
+              { $gt: [{ $size: { $ifNull: ["$comments", []] } }, 5] },
+              { $lte: [{ $size: { $ifNull: ["$likes", []] } }, 10] }
+            ]
+          }
         }
       },
       ...commonStages
