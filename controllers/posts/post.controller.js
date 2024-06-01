@@ -88,11 +88,14 @@ const postController = {
     // Basic filter
     let filter = {};
     if (category_id) {
-      filter.category_id = category_id;
+      filter.category_id = mongoose.Types.ObjectId(category_id);
     }
     if (title) {
-      filter.content = { $regex: title, $options: "i" };
+      filter.title = { $regex: title, $options: "i" };
     }
+
+    const allPosts = await Post.find({});
+    const matchingPosts = await Post.find(filter);
 
     // Calculate the date two weeks ago
     const twoWeeksAgo = new Date();
@@ -181,7 +184,6 @@ const postController = {
       User.countDocuments({})
     ]);
 
-    // Send response to the client
     res.json({
       status: "success",
       message: "Posts fetched successfully",
@@ -195,6 +197,7 @@ const postController = {
       totalPosts
     });
   }),
+
 
   AllPosts: asyncHandler(async (req, res) => {
     const { category_id, title, page = 1, limit = 300 } = req.query;
