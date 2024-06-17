@@ -4,6 +4,7 @@ const User = require("../../model/user/user.model");
 const Post = require("../../model/post/post.model");
 const Category = require("../../model/category/category.model");
 const { cloudUpload } = require("../../utils/cloudinary.utils");
+const { Admin } = require("mongodb");
 require('fs').promises;
 
 const postController = {
@@ -56,7 +57,6 @@ const postController = {
       post: postCreated
     });
   }),
-
 
   fetchPostDetails: asyncHandler(async (req, res) => {
     try {
@@ -202,7 +202,6 @@ const postController = {
       totalPosts
     });
   }),
-
 
   AllPosts: asyncHandler(async (req, res) => {
     const { category_id, title, page = 1, limit = 300 } = req.query;
@@ -455,7 +454,6 @@ const postController = {
       res.status(500).json({ message: "Internal server error" });
     }
   }),
-
 
   delete: asyncHandler(async (req, res) => {
     //get the post id from params
